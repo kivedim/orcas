@@ -67,7 +67,7 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 .homebtn svg{width:32px}
 
 /* ---------- Egg ---------- */
-#egg{background:linear-gradient(#bdf0ff 0,#dff8e2 45%,#9bdc8c 45%,#6cbb5f 100%)}
+#egg{touch-action:none;background:linear-gradient(#bdf0ff 0,#dff8e2 45%,#9bdc8c 45%,#6cbb5f 100%)}
 #egg .hill{position:absolute;bottom:52%;width:70%;aspect-ratio:2;border-radius:50% 50% 0 0;background:#8fd27c}
 #egg .hill.a{left:-15%}#egg .hill.b{right:-20%;width:80%;background:#7cc86c}
 .stage{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(78vw,46vh);aspect-ratio:1}
@@ -185,6 +185,12 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 @keyframes puff{to{transform:translate(var(--dx),-110px) scale(2.6);opacity:0}}
 @keyframes wave{to{background-position-x:26px}}
 
+#egg.shk{animation:shake .38s}
+.dino .sadface,.dino .gladface{opacity:0;transition:opacity .12s}
+.dino.sad .sadface,.dino.glad .gladface{opacity:1}
+.tear{transform-box:fill-box;animation:tear 1s ease-in infinite}
+.tear.t2{animation-delay:.5s}
+@keyframes tear{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(34px);opacity:0}}
 @keyframes wob{0%,100%{transform:rotate(0)}25%{transform:rotate(-9deg)}50%{transform:rotate(8deg)}75%{transform:rotate(-4deg)}}
 @keyframes popin{0%{transform:scale(0)}100%{transform:scale(1)}}
 @keyframes jump{0%,100%{transform:translateY(0)}40%{transform:translateY(-18%) scaleY(1.04)}70%{transform:translateY(0) scaleY(.94)}}
@@ -198,7 +204,7 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 @keyframes leave{to{transform:translate(-160vw,-50%)}}
 @keyframes floatup{0%{transform:scale(.4);opacity:1}100%{transform:translateY(-30vh) scale(1.3);opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation-iteration-count:1 !important;transition-duration:.01s !important}
- .world.hero .disc,.again,.o-waves,#oLayer.shake,.stars,.spot.open .creature .bob{animation:none !important}}
+ .world.hero .disc,.again,.o-waves,#oLayer.shake,#egg.shk,.tear,.stars,.spot.open .creature .bob{animation:none !important}}
 </style>
 </head>
 <body>
@@ -229,6 +235,7 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
     </div>
     <button class="again" id="again" hidden aria-label="New egg"></button>
     <div class="shelf" id="shelf"></div>
+    <div class="caption" id="eggCap"></div>
   </section>
 
   <!-- MEMORY -->
@@ -432,6 +439,34 @@ meat:()=>`<svg class="art" viewBox="0 0 110 100">
  <path d="M30 52 Q46 62 64 54" stroke="#9a3e20" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
 memicon:()=>`<svg class="art" viewBox="0 0 100 100"><g transform="rotate(-10 34 52)"><rect x="12" y="22" width="44" height="58" rx="9" fill="#ffcf3f" stroke="#fff" stroke-width="4"/><path d="M28 66 Q32 46 44 42 Q40 54 42 66Z" fill="#1d2433"/></g>
  <g transform="rotate(10 66 52)"><rect x="44" y="22" width="44" height="58" rx="9" fill="#fff" stroke="#2aa5d4" stroke-width="4"/><path d="M52 52 Q60 42 76 44 Q86 46 86 52 Q80 60 66 58 Q56 58 52 52Z" fill="#1d2433"/><ellipse cx="74" cy="48" rx="4" ry="2" fill="#fff"/></g></svg>`,
+ankylo:(c,c2)=>`<svg class="art" viewBox="0 0 220 180">
+ <path d="M48 118 Q26 122 16 112 L18 106 Q30 114 52 108Z" fill="${c}"/>
+ <ellipse cx="12" cy="110" rx="13" ry="10" fill="${c2}" stroke="${c}" stroke-width="4"/>
+ <rect x="80" y="126" width="18" height="36" rx="8" fill="${c}"/><rect x="80" y="126" width="18" height="36" rx="8" fill="#0002"/>
+ <rect x="134" y="126" width="18" height="36" rx="8" fill="${c}"/><rect x="134" y="126" width="18" height="36" rx="8" fill="#0002"/>
+ <path d="M38 132 Q40 74 104 70 Q168 70 172 132Z" fill="${c}"/>
+ ${[[64,96],[86,84],[110,80],[134,86],[154,100],[76,114],[100,104],[124,104],[146,116]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="7" fill="${c2}" stroke="${c}" stroke-width="2"/>`).join('')}
+ ${[0,1,2,3,4,5].map(i=>{const x=52+i*22;return `<path d="M${x-6} 128 L${x} 140 L${x+6} 128Z" fill="#fff6e2" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`}).join('')}
+ <rect x="64" y="128" width="18" height="36" rx="8" fill="${c}"/><rect x="118" y="128" width="18" height="36" rx="8" fill="${c}"/>
+ <path d="M168 110 L174 98 L180 110Z M176 108 L184 98 L188 110Z" fill="#fff6e2" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+ <ellipse cx="184" cy="120" rx="24" ry="15" fill="${c}"/>
+ ${eye(186,113,4.5)}
+ <path d="M191 126 Q197 129 204 124" stroke="${INK}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+ <circle cx="199" cy="120" r="3.5" fill="#ff8fa3" opacity=".7"/></svg>`,
+parasaur:(c,c2)=>`<svg class="art" viewBox="0 0 220 180">
+ <path d="M58 112 Q20 118 4 96 Q30 104 62 98Z" fill="${c}"/>
+ <rect x="116" y="126" width="14" height="40" rx="7" fill="${c}"/><rect x="116" y="126" width="14" height="40" rx="7" fill="#0002"/>
+ <ellipse cx="100" cy="108" rx="50" ry="32" fill="${c}"/>
+ <path d="M72 116 Q64 140 70 170 L92 170 Q94 140 98 118Z" fill="${c}"/><path d="M68 166 L96 166 Q98 172 92 172 L66 172Z" fill="${c}"/>
+ <rect x="128" y="126" width="14" height="42" rx="7" fill="${c}"/>
+ <ellipse cx="104" cy="122" rx="32" ry="12" fill="${c2}"/>
+ <path d="M130 98 Q152 86 158 60 L178 64 Q172 98 140 122Z" fill="${c}"/>
+ <path d="M162 54 Q146 30 112 20 Q108 26 114 30 Q146 40 158 62Z" fill="${c2}" stroke="${c}" stroke-width="4" stroke-linejoin="round"/>
+ <ellipse cx="172" cy="60" rx="24" ry="15" fill="${c}"/><ellipse cx="194" cy="67" rx="13" ry="8" fill="${c}"/>
+ ${eye(174,56,5)}
+ <path d="M184 71 Q194 75 205 69" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/>
+ <circle cx="88" cy="94" r="6" fill="${c2}" opacity=".7"/><circle cx="108" cy="88" r="5" fill="${c2}" opacity=".7"/>
+ <circle cx="184" cy="64" r="4" fill="#ff8fa3" opacity=".7"/></svg>`,
 rock:(c='#8189ad')=>`<svg class="art" viewBox="0 0 200 200">
  <path d="M8 198 Q-2 124 50 98 Q82 60 134 76 Q194 92 196 152 Q200 198 168 198Z" fill="${c}"/>
  <path d="M54 110 Q86 80 128 90" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round" opacity=".35"/>
@@ -452,7 +487,7 @@ chest:()=>`<svg class="art" viewBox="0 0 200 200">
  <rect x="86" y="104" width="28" height="32" rx="6" fill="#ffd34d"/><circle cx="100" cy="118" r="5" fill="${INK}"/></svg>`,
 };
 const DINO_COLORS=[['#5aa9e6','#c4e5ff'],['#68c25e','#d6f5c9'],['#ff9f43','#ffe0b8'],['#b57cf2','#ecd9ff'],['#f06aa8','#ffd1e6'],['#2fc4b2','#c6f4ee']];
-const NAMES={gwhite:'Great white shark',trike:'Triceratops',stego:'Stegosaurus',orca:'Killer whale',shark:'Shark',longneck:'Brachiosaurus',trex:'T-rex',octopus:'Octopus',crab:'Crab',fish:'Fish',starfish:'Starfish'};
+const NAMES={ankylo:'Ankylosaurus',parasaur:'Parasaurolophus',gwhite:'Great white shark',trike:'Triceratops',stego:'Stegosaurus',orca:'Killer whale',shark:'Shark',longneck:'Brachiosaurus',trex:'T-rex',octopus:'Octopus',crab:'Crab',fish:'Fish',starfish:'Starfish'};
 const $=id=>document.getElementById(id);
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -482,6 +517,10 @@ const sfx={
   o.frequency.setValueAtTime(800*m,t);o.frequency.linearRampToValueAtTime(1700*m,t+.25);o.frequency.linearRampToValueAtTime(1000*m,t+.6);o.frequency.linearRampToValueAtTime(1400*m,t+.75);
   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.16,t+.05);g.gain.setValueAtTime(.16,t+.65);g.gain.exponentialRampToValueAtTime(.0001,t+.85);
   o.connect(g).connect(a.destination);o.start(t);o.stop(t+.9)},
+ giggle(){[880,1180,990,1320].forEach((f,i)=>setTimeout(()=>tone(f,.09,'sine',.18),i*70))},
+ cry(){tone(560,.45,'triangle',.18,400);setTimeout(()=>tone(500,.7,'triangle',.18,300),430)},
+ whoosh(){noise(.45,.2,'bandpass',1000);tone(260,.4,'sine',.12,1000)},
+ boing(){tone(180,.18,'sine',.25,520);setTimeout(()=>tone(520,.25,'sine',.2,160),160)},
  yuck(){tone(420,.4,'sawtooth',.07,140);tone(300,.35,'triangle',.18,110)},
  bonk(){tone(520,.2,'square',.13,110);noise(.14,.35,'lowpass',1600)},
  tense(){[0,380,760].forEach(d=>setTimeout(()=>tone(110,.3,'square',.09,92),d))},
@@ -512,12 +551,36 @@ function hearts(x,y,n=5){for(let i=0;i<n;i++){const h=document.createElement('di
  $('app').appendChild(h);setTimeout(()=>h.remove(),1700)}}
 
 /* ============ EGG WORLD ============ */
-let egg={taps:0,next:null,hatched:false,shelf:[]};
+const EGG_SPECIES=['longneck','trex','trike','stego','ankylo','parasaur'];
+const DINO_INFO={
+ longneck:"It's a Brachiosaurus! It is super tall and eats leaves from the tops of trees.",
+ trex:"It's a T-rex! The king of the dinosaurs, with big sharp teeth and tiny arms.",
+ trike:"It's a Triceratops! It has three horns and a big frill on its head.",
+ stego:"It's a Stegosaurus! It has big plates on its back and spikes on its tail.",
+ ankylo:"It's an Ankylosaurus! It has armor like a tank and a club on its tail.",
+ parasaur:"It's a Parasaurolophus! It has a long crest on its head and makes loud honking sounds."};
+const FACES={longneck:{e:[178,30,5],m:[189,46,22]},trex:{e:[166,42,6],m:[182,68,52]},trike:{e:[180,94,5],m:[198,112,22]},
+ stego:{e:[188,116,4],m:[197,127,14]},ankylo:{e:[186,113,4.5],m:[197,126,14]},parasaur:{e:[174,56,5],m:[192,70,22]}};
+function moodFaces(svg,f,c){const [ex,ey,r]=f.e,[mx,my,w]=f.m;
+ const cover=`<circle cx="${ex}" cy="${ey}" r="${r*1.7}" fill="${c}"/><ellipse cx="${mx}" cy="${my}" rx="${w*.6}" ry="${w*.32+4}" fill="${c}"/>`;
+ const sad=`<g class="sadface">${cover}
+  <path d="M${ex-r} ${ey-r*.2} Q${ex} ${ey+r*.9} ${ex+r} ${ey-r*.2}" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M${ex-r*1.3} ${ey-r*2.3} L${ex+r*1.2} ${ey-r*1.6}" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="${mx}" cy="${my+2}" rx="${w*.22+3}" ry="${w*.18+4}" fill="${INK}"/><ellipse cx="${mx}" cy="${my+w*.12+4}" rx="${w*.12+2}" ry="${w*.06+2}" fill="#ff6b8b"/>
+  <path class="tear" d="M${ex} ${ey+r*.8} q-4 7 0 10 q4 -3 0 -10Z" fill="#6fd0ff" stroke="#2a8fc4" stroke-width="1"/>
+  <path class="tear t2" d="M${ex+r*.6} ${ey+r*.8} q-4 7 0 10 q4 -3 0 -10Z" fill="#6fd0ff" stroke="#2a8fc4" stroke-width="1"/></g>`;
+ const glad=`<g class="gladface">${cover}
+  <path d="M${ex-r} ${ey+r*.3} Q${ex} ${ey-r*1.4} ${ex+r} ${ey+r*.3}" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M${mx-w*.42} ${my-w*.1} Q${mx} ${my+w*.5+4} ${mx+w*.42} ${my-w*.1}Z" fill="${INK}"/><ellipse cx="${mx}" cy="${my+w*.18+1}" rx="${w*.16+1}" ry="${w*.07+1.5}" fill="#ff6b8b"/>
+  <circle cx="${mx-w*.55}" cy="${my-w*.25}" r="${Math.max(5,w*.18)}" fill="#ff8fa3" opacity=".85"/></g>`;
+ return svg.replace(/<\/svg>\s*$/,sad+glad+'</svg>')}
+let egg={taps:0,next:null,hatched:false,shelf:[],mood:'',busy:false,last:null,hint:false,moodT:0};
 $('nest').innerHTML=ART.nest();
-function newEgg(){egg.taps=0;egg.hatched=false;
- egg.next={type:rnd(['longneck','trex']),col:rnd(DINO_COLORS)};
+function eggCaption(t){const c=$('eggCap');c.textContent=t;c.classList.add('show');clearTimeout(egg.capT);egg.capT=setTimeout(()=>c.classList.remove('show'),6000)}
+function newEgg(){egg.taps=0;egg.hatched=false;egg.busy=false;setMood('');
+ let t;do{t=rnd(EGG_SPECIES)}while(t===egg.last);egg.last=t;egg.next={type:t,col:rnd(DINO_COLORS)};
  const eb=$('eggbox');eb.hidden=false;eb.innerHTML=ART.egg('#fff3d6',egg.next.col[0]);restart(eb,'wob');
- $('dino').hidden=true;$('again').hidden=true}
+ $('dino').hidden=true;$('again').hidden=true;$('eggCap').classList.remove('show')}
 let eggStarted=false;
 function eggInit(){if(!eggStarted){eggStarted=true;newEgg()}}
 $('eggbox').addEventListener('pointerdown',()=>{if(egg.hatched)return;egg.taps++;sfx.crack();restart($('eggbox'),'wob');
@@ -527,10 +590,42 @@ function hatch(){egg.hatched=true;const eb=$('eggbox');eb.hidden=true;const stag
  for(let i=0;i<9;i++){const s=document.createElement('div');s.className='shell';s.style.background=i%3?'#fff3d6':egg.next.col[0];
   const a=Math.random()*Math.PI*2,d=120+Math.random()*120;s.style.setProperty('--dx',Math.cos(a)*d+'px');s.style.setProperty('--dy',(Math.sin(a)*d-60)+'px');s.style.setProperty('--r',(Math.random()*720-360)+'deg');
   stage.appendChild(s);setTimeout(()=>s.remove(),1000)}
- const d=$('dino');d.innerHTML=ART[egg.next.type](...egg.next.col);d.hidden=false;restart(d,'pop');
- sfx.pop();setTimeout(sfx.roar,250);setTimeout(()=>{say(NAMES[egg.next.type]+'!');sfx.tada()},700);
+ const d=$('dino'),t=egg.next.type;d.innerHTML=moodFaces(ART[t](...egg.next.col),FACES[t],egg.next.col[0]);d.className='dino';d.hidden=false;restart(d,'pop');
+ sfx.pop();setTimeout(sfx.roar,250);setTimeout(()=>{sfx.tada();eggCaption(DINO_INFO[t]);say(DINO_INFO[t])},700);
  setTimeout(()=>{$('again').hidden=false},1300)}
-$('dino').addEventListener('pointerdown',()=>{sfx.roar();restart($('dino'),'jump');setTimeout(()=>say(NAMES[egg.next.type]),500)});
+function setMood(m){const d=$('dino');d.classList.remove('sad','glad');if(m)d.classList.add(m);egg.mood=m;clearTimeout(egg.moodT)}
+function dinoBox(){const par=$('egg'),a=par.getBoundingClientRect(),b=$('dino').getBoundingClientRect();return{x:b.left-a.left+b.width/2,y:b.top-a.top+b.height/2,w:b.width,h:b.height,top:b.top-a.top,bottom:b.bottom-a.top,left:b.left-a.left,right:b.right-a.left,cx:b.left+b.width/2,cy:b.top}}
+function hop(){$('dino').animate([{transform:'translateY(0)'},{transform:'translateY(-14%) scale(1.04,.97)'},{transform:'translateY(0) scale(1.06,.92)'},{transform:'translateY(0)'}],{duration:520,easing:'ease-out'})}
+function tapDino(){if(egg.busy)return;const b=dinoBox(),wasSad=egg.mood==='sad';setMood('glad');hop();sfx.giggle();hearts(b.cx-20,b.cy+b.h*.3,wasSad?8:5);
+ if(wasSad)say(rnd(['There, there. All better!','Big hug! All better!']));else if(Math.random()<.55)say(rnd(['Hee hee!','Yay!','I love you!','That tickles!']));
+ egg.moodT=setTimeout(()=>setMood(''),1800)}
+function fling(dir){if(egg.busy)return;egg.busy=true;setMood('');const d=$('dino'),b=dinoBox(),par=$('egg'),W=par.clientWidth;
+ d.getAnimations().filter(a=>!(a instanceof CSSAnimation)).forEach(a=>a.cancel());d.style.transformOrigin='50% 55%';
+ let kf,dur,at,ix,iy,txt;
+ if(dir==='up'){const H=b.bottom+60;dur=1900;at=.82;ix=b.x;iy=b.bottom-10;txt=rnd(['BONK!','THUD!']);sfx.whoosh();
+  kf=[{transform:'none',offset:0},{transform:'translateY(6%) scale(1.08,.84)',offset:.1},{transform:`translateY(-${H}px) rotate(200deg)`,offset:.42,easing:'ease-in'},
+   {transform:`translateY(-${H}px) rotate(360deg)`,offset:.55,easing:'ease-in'},{transform:'translateY(0) rotate(720deg)',offset:.82},
+   {transform:'translateY(4%) scale(1.25,.7) rotate(720deg)',offset:.87},{transform:'translateY(-6%) scale(.95,1.05) rotate(720deg)',offset:.94},{transform:'rotate(720deg)',offset:1}]}
+ else if(dir==='right'){const D=W-b.right+b.w*.14;dur=2100;at=.38;ix=W-24;iy=b.y;txt=rnd(['CRASH!','SMACK!']);noise(.4,.25,'bandpass',600);
+  kf=[{transform:'none',offset:0},{transform:'translateX(-6%) rotate(-8deg)',offset:.12},{transform:`translateX(${D}px) rotate(6deg)`,offset:.38,easing:'ease-in'},
+   {transform:`translateX(${D}px) scale(.68,1.12)`,offset:.44},{transform:`translate(${D*.55}px,-18%) rotate(-200deg)`,offset:.64},
+   {transform:`translateX(${D*.2}px) rotate(-340deg)`,offset:.82},{transform:'scale(1.1,.85) rotate(-360deg)',offset:.9},{transform:'rotate(-360deg)',offset:1}]}
+ else{const D=b.left+b.w*.14;dur=2300;at=.45;ix=Math.max(40,b.left-D*.3+b.w*.3);iy=b.bottom-10;txt=rnd(['BOINK!','OOF!']);sfx.boing();
+  kf=[{transform:'none',offset:0},{transform:'translateX(4%) rotate(8deg)',offset:.1},{transform:`translate(-${D*.5}px,-32%) rotate(-120deg)`,offset:.3,easing:'ease-out'},
+   {transform:`translate(-${D*.8}px,12%) rotate(-180deg)`,offset:.45,easing:'ease-in'},{transform:`translate(-${D*.8}px,14%) rotate(-180deg) scale(1.15,.8)`,offset:.5},
+   {transform:`translate(-${D*.8}px,12%) rotate(-168deg)`,offset:.57},{transform:`translate(-${D*.8}px,12%) rotate(-192deg)`,offset:.64},{transform:`translate(-${D*.8}px,12%) rotate(-180deg)`,offset:.7},
+   {transform:`translate(-${D*.4}px,-22%) rotate(-280deg)`,offset:.85},{transform:'rotate(-360deg)',offset:1}]}
+ d.animate(kf,{duration:dur});
+ setTimeout(()=>{sfx.bonk();powIn(par,txt,ix,iy-50);sparksIn(par,ix,iy,9,100);fxIn(par,'boom',ix,iy,600).innerHTML=BOOM;restart(par,'shk')},dur*at);
+ setTimeout(()=>{d.style.transformOrigin='';setMood('sad');sfx.cry();say(rnd(['Ouch! Waaah!','Owie! That hurt!','Oh no! Waaah!']));egg.busy=false;
+  if(!egg.hint){egg.hint=true;setTimeout(()=>{if(egg.mood==='sad'){eggCaption('Tap the dino to give it a hug!');say('Tap the dino to give it a hug!')}},1700)}
+  egg.moodT=setTimeout(()=>{if(egg.mood==='sad')setMood('')},6000)},dur)}
+let eggSw=null;
+$('egg').addEventListener('pointerdown',e=>{if(!egg.hatched||e.target.closest('button'))return;eggSw={x:e.clientX,y:e.clientY,onDino:!!e.target.closest('#dino')}});
+addEventListener('pointercancel',()=>eggSw=null);
+addEventListener('pointerup',e=>{if(!eggSw||current!=='egg')return;const s=eggSw;eggSw=null;const dx=e.clientX-s.x,dy=e.clientY-s.y;
+ if(Math.hypot(dx,dy)<16){if(s.onDino)tapDino();return}
+ if(Math.abs(dy)>Math.abs(dx)){if(dy<-40)fling('up')}else if(dx>40)fling('right');else if(dx<-40)fling('left')});
 $('again').innerHTML=ART.egg('#fff3d6','#ffb23f');
 $('again').onclick=()=>{egg.shelf.push(egg.next);if(egg.shelf.length>5)egg.shelf.shift();
  $('shelf').innerHTML=egg.shelf.map(s=>`<div>${ART[s.type](...s.col)}</div>`).join('');sfx.boop();newEgg()};
@@ -543,8 +638,8 @@ function sparksIn(par,x,y,n,r=90){for(let i=0;i<n;i++){const a=Math.random()*Mat
 function relPt(par,el){const a=par.getBoundingClientRect(),b=el.getBoundingClientRect();return[b.left-a.left+b.width/2,b.top-a.top+b.height/2]}
 
 /* ============ MEMORY ============ */
-const MEM_POOL=['orca','shark','gwhite','octopus','crab','starfish','longneck','trex','trike','stego'];
-const DINOS={longneck:1,trex:1,trike:1,stego:1};
+const MEM_POOL=['orca','shark','gwhite','octopus','crab','starfish','longneck','trex','trike','stego','ankylo','parasaur'];
+const DINOS={longneck:1,trex:1,trike:1,stego:1,ankylo:1,parasaur:1};
 const LEVELS=[2,3,4,6];
 const MEMBACK=`<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#ffcf3f"/>
  <path d="M0 62 Q12 52 25 62 T50 62 T75 62 T100 62 V100 H0Z" fill="#2aa5d4"/><path d="M0 76 Q12 68 25 76 T50 76 T75 76 T100 76 V100 H0Z" fill="#0f5d8f"/>
@@ -589,6 +684,8 @@ const FEED=[
  {t:'trex',bg:'land',eats:'meat',face:{e:[166,42,6],m:[182,68,52]},m:[.86,.38]},
  {t:'trike',bg:'land',eats:'fern',face:{e:[180,94,5],m:[198,112,22]},m:[.9,.62]},
  {t:'stego',bg:'land',eats:'fern',face:{e:[188,116,4],m:[197,127,14]},m:[.9,.72]},
+ {t:'ankylo',bg:'land',eats:'fern',face:{e:[186,113,4.5],m:[197,126,14]},m:[.9,.7]},
+ {t:'parasaur',bg:'land',eats:'leaf',face:{e:[174,56,5],m:[192,70,22]},m:[.88,.39]},
 ];
 function withYuck(svg,f,col){const [ex,ey,r]=f.e,[mx,my,w]=f.m,ink=f.ink||INK,c=f.col||col;
  const g=`<g class="yuckface"><circle cx="${ex}" cy="${ey}" r="${r*1.7}" fill="${c}"/>
