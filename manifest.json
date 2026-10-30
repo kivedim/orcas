@@ -1,0 +1,1 @@
+{"id":"orcas-dinos","name":"Orcas & Dinos","short_name":"Orcas","start_url":"./","scope":"./","display":"standalone","orientation":"portrait","background_color":"#0c4f7e","theme_color":"#2bb3d8","icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}
