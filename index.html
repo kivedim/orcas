@@ -876,6 +876,72 @@ carrot:()=>`<svg class="art" viewBox="0 0 100 100">
  <path d="M50 22 Q40 4 30 8 Q40 14 46 24Z M52 22 Q56 2 68 4 Q60 12 56 24Z M50 22 Q52 6 50 0 Q46 10 48 22Z" fill="#4fb35a"/>
  <path d="M34 26 Q50 18 66 26 Q64 56 52 94 Q50 98 48 94 Q36 56 34 26Z" fill="#ff8a3d" stroke="#e86a1c" stroke-width="2.5" stroke-linejoin="round"/>
  <path d="M40 40 L48 42 M54 52 L62 50 M42 64 L50 66 M50 78 L55 77" stroke="#e86a1c" stroke-width="3" stroke-linecap="round"/></svg>`,
+spino:(c,c2)=>`<svg class="art" viewBox="0 0 220 180">
+ <path d="M70 104 Q30 112 4 138 Q44 124 82 128Z" fill="${c}"/>
+ <path d="M58 98 Q66 28 98 22 Q132 18 142 74 Q112 98 58 98Z" fill="${c2}" stroke="${c}" stroke-width="5" stroke-linejoin="round"/>
+ <path d="M78 92 L82 40 M98 92 L100 28 M118 88 L120 34 M134 80 L132 52" stroke="${c}" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+ <path d="M90 128 L86 164 Q86 170 94 170 L112 170 Q114 162 104 160 L108 130Z" fill="${c}"/><path d="M90 128 L86 164 Q86 170 94 170 L112 170 Q114 162 104 160 L108 130Z" fill="#0002"/>
+ <ellipse cx="104" cy="110" rx="46" ry="32" fill="${c}"/><ellipse cx="116" cy="120" rx="24" ry="18" fill="${c2}"/>
+ <path d="M110 132 L108 168 Q108 174 116 174 L136 174 Q138 166 128 164 L130 134Z" fill="${c}"/>
+ <path d="M128 92 Q128 66 150 60 L206 66 Q214 72 208 80 L158 86 Q148 100 138 106Z" fill="${c}"/>
+ <path d="M160 78 L206 74" stroke="${INK}" stroke-width="2.5" stroke-linecap="round"/>
+ <path d="M170 79 L173 85 L176 79Z M186 77 L189 83 L192 77Z" fill="#fff"/>${eye(156,67,5)}<circle cx="202" cy="69" r="2" fill="${INK}"/>
+ <path d="M138 104 Q152 104 154 114" stroke="${c}" stroke-width="7" fill="none" stroke-linecap="round"/>
+ <circle cx="146" cy="78" r="4.5" fill="#ff8fa3" opacity=".7"/></svg>`,
+raptor:(c,c2)=>`<svg class="art" viewBox="0 0 220 180">
+ <path d="M78 98 Q40 92 6 96 Q40 108 82 112Z" fill="${c}"/>
+ <path d="M8 96 L2 90 L14 94Z M16 98 L10 104 L22 100Z" fill="${c2}"/>
+ <path d="M92 116 L84 148 L96 168 L108 168 Q108 162 100 160 L94 148 L104 120Z" fill="${c}"/><path d="M92 116 L84 148 L96 168 L108 168 Q108 162 100 160 L94 148 L104 120Z" fill="#0002"/>
+ <ellipse cx="104" cy="104" rx="36" ry="22" fill="${c}" transform="rotate(-10 104 104)"/><ellipse cx="112" cy="112" rx="18" ry="11" fill="${c2}"/>
+ <path d="M108 118 L102 150 L114 170 L130 170 Q130 164 120 162 L112 150 L120 122Z" fill="${c}"/>
+ <path d="M114 166 Q106 160 108 152" stroke="#fff6e2" stroke-width="4" fill="none" stroke-linecap="round"/>
+ <path d="M124 94 Q132 66 148 56" stroke="${c}" stroke-width="16" fill="none" stroke-linecap="round"/>
+ <path d="M146 46 L140 34 L152 42 L150 30 L160 42Z" fill="${c2}"/>
+ <path d="M140 58 Q146 44 166 46 L196 54 Q202 60 196 64 L160 70 Q144 70 140 58Z" fill="${c}"/>
+ <path d="M164 64 L194 60" stroke="${INK}" stroke-width="2.5" stroke-linecap="round"/><path d="M172 64 L174 69 L177 64Z M184 62 L186 67 L189 62Z" fill="#fff"/>
+ ${eye(160,53,5)}
+ <path d="M126 100 Q142 106 140 120" stroke="${c}" stroke-width="7" fill="none" stroke-linecap="round"/>
+ <path d="M128 104 L122 116 M134 108 L130 120 M140 112 L138 124" stroke="${c2}" stroke-width="4" stroke-linecap="round"/>
+ <circle cx="152" cy="62" r="4" fill="#ff8fa3" opacity=".7"/></svg>`,
+pachy:(c,c2)=>`<svg class="art" viewBox="0 0 220 180">
+ <path d="M72 100 Q34 108 6 132 Q46 120 82 122Z" fill="${c}"/>
+ <path d="M88 124 L84 164 Q84 170 92 170 L110 170 Q112 162 102 160 L106 126Z" fill="${c}"/><path d="M88 124 L84 164 Q84 170 92 170 L110 170 Q112 162 102 160 L106 126Z" fill="#0002"/>
+ <ellipse cx="104" cy="106" rx="44" ry="34" fill="${c}"/><ellipse cx="118" cy="116" rx="20" ry="20" fill="${c2}"/>
+ <path d="M108 128 L106 168 Q106 174 114 174 L134 174 Q136 166 126 164 L128 130Z" fill="${c}"/>
+ <path d="M128 90 Q130 70 146 64" stroke="${c}" stroke-width="20" fill="none" stroke-linecap="round"/>
+ <ellipse cx="174" cy="70" rx="24" ry="15" fill="${c}"/>
+ <circle cx="158" cy="50" r="26" fill="${c2}" stroke="${c}" stroke-width="4"/>
+ ${[[134,46],[136,60],[140,32],[150,26],[164,26]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5" fill="${c}"/>`).join('')}
+ ${eye(166,62,5)}<circle cx="194" cy="66" r="2" fill="${INK}"/>
+ <path d="M176 76 Q186 80 194 74" stroke="${INK}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+ <path d="M136 98 Q150 98 152 108" stroke="${c}" stroke-width="7" fill="none" stroke-linecap="round"/>
+ <circle cx="168" cy="72" r="4.5" fill="#ff8fa3" opacity=".7"/></svg>`,
+diplo:(c,c2)=>`<svg class="art" viewBox="0 0 220 180">
+ <path d="M56 108 Q22 104 2 78 Q20 98 58 100Z" fill="${c}"/>
+ <rect x="70" y="122" width="16" height="42" rx="7" fill="${c}"/><rect x="70" y="122" width="16" height="42" rx="7" fill="#0002"/>
+ <rect x="116" y="122" width="16" height="42" rx="7" fill="${c}"/><rect x="116" y="122" width="16" height="42" rx="7" fill="#0002"/>
+ <ellipse cx="96" cy="110" rx="48" ry="28" fill="${c}"/>
+ <rect x="56" y="124" width="16" height="44" rx="7" fill="${c}"/><rect x="102" y="124" width="16" height="44" rx="7" fill="${c}"/>
+ <ellipse cx="100" cy="122" rx="30" ry="11" fill="${c2}"/>
+ <path d="M124 96 Q160 70 188 44 L200 56 Q170 86 134 114Z" fill="${c}"/>
+ <path d="M134 104 Q164 80 190 54" stroke="${c2}" stroke-width="5" fill="none" stroke-linecap="round" opacity=".7"/>
+ <ellipse cx="198" cy="46" rx="18" ry="10" fill="${c}"/>${eye(200,42,4)}
+ <path d="M204 52 Q210 54 214 49" stroke="${INK}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+ ${[[76,92],[96,86],[116,92]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5" fill="${c2}" opacity=".7"/>`).join('')}
+ <circle cx="194" cy="50" r="3.5" fill="#ff8fa3" opacity=".7"/></svg>`,
+iguano:(c,c2)=>`<svg class="art" viewBox="0 0 220 180">
+ <path d="M58 100 Q22 110 4 132 Q34 122 62 118Z" fill="${c}"/>
+ <path d="M70 112 Q60 140 70 168 L92 168 Q94 140 96 118Z" fill="${c}"/><path d="M70 112 Q60 140 70 168 L92 168 Q94 140 96 118Z" fill="#0002"/>
+ <ellipse cx="102" cy="102" rx="50" ry="30" fill="${c}"/><ellipse cx="108" cy="116" rx="32" ry="12" fill="${c2}"/>
+ <path d="M88 116 Q80 142 88 170 L110 170 Q112 142 112 120Z" fill="${c}"/>
+ <path d="M124 104 Q132 134 134 160 L152 160 Q152 152 145 150 Q142 128 146 100Z" fill="${c}"/>
+ <path d="M144 124 L158 114 L148 132Z" fill="#fff6e2" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+ <path d="M134 92 Q146 74 152 66" stroke="${c}" stroke-width="20" fill="none" stroke-linecap="round"/>
+ <ellipse cx="170" cy="64" rx="26" ry="15" fill="${c}"/><path d="M190 60 Q206 64 200 76 Q192 76 186 72Z" fill="${c2}"/>
+ ${eye(170,58,5)}
+ <path d="M176 74 Q186 78 194 72" stroke="${INK}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+ ${[[84,84],[104,78],[124,84]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5" fill="${c2}" opacity=".7"/>`).join('')}
+ <circle cx="164" cy="68" r="4.5" fill="#ff8fa3" opacity=".7"/></svg>`,
 rock:(c='#8189ad')=>`<svg class="art" viewBox="0 0 200 200">
  <path d="M8 198 Q-2 124 50 98 Q82 60 134 76 Q194 92 196 152 Q200 198 168 198Z" fill="${c}"/>
  <path d="M54 110 Q86 80 128 90" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round" opacity=".35"/>
@@ -896,13 +962,13 @@ chest:()=>`<svg class="art" viewBox="0 0 200 200">
  <rect x="86" y="104" width="28" height="32" rx="6" fill="#ffd34d"/><circle cx="100" cy="118" r="5" fill="${INK}"/></svg>`,
 };
 const DINO_COLORS=[['#5aa9e6','#c4e5ff'],['#68c25e','#d6f5c9'],['#ff9f43','#ffe0b8'],['#b57cf2','#ecd9ff'],['#f06aa8','#ffd1e6'],['#2fc4b2','#c6f4ee']];
-const NAMES={bibbi:'Bibbi-Cat',spider:'Giant spider',snake:'Snake',ray:'Stingray',bat:'Bat',eagle:'Eagle',vulture:'Vulture',ptero:'Pterodactyl',hammer:'Hammerhead shark',ankylo:'Ankylosaurus',parasaur:'Parasaurolophus',gwhite:'Great white shark',trike:'Triceratops',stego:'Stegosaurus',orca:'Killer whale',shark:'Shark',longneck:'Brachiosaurus',trex:'T-rex',octopus:'Octopus',crab:'Crab',fish:'Fish',starfish:'Starfish'};
+const NAMES={spino:'Spinosaurus',raptor:'Velociraptor',pachy:'Pachycephalosaurus',diplo:'Diplodocus',iguano:'Iguanodon',bibbi:'Bibbi-Cat',spider:'Giant spider',snake:'Snake',ray:'Stingray',bat:'Bat',eagle:'Eagle',vulture:'Vulture',ptero:'Pterodactyl',hammer:'Hammerhead shark',ankylo:'Ankylosaurus',parasaur:'Parasaurolophus',gwhite:'Great white shark',trike:'Triceratops',stego:'Stegosaurus',orca:'Killer whale',shark:'Shark',longneck:'Brachiosaurus',trex:'T-rex',octopus:'Octopus',crab:'Crab',fish:'Fish',starfish:'Starfish'};
 const $=id=>document.getElementById(id);
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 
 /* ============ SOUND ============ */
-const APP_VERSION='2.3';
+const APP_VERSION='2.4';
 const STORE={get(k,d){try{const v=localStorage.getItem('dh-'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('dh-'+k,JSON.stringify(v))}catch(e){}}};
 const SET=Object.assign({sfx:true,music:true,voice:true,rate:.9,orcaName:'Killer whale',level:'auto',lock:'tap',timer:0},STORE.get('settings',{}));
 if(typeof SET.lock!=='string')SET.lock='tap';
@@ -1010,7 +1076,7 @@ function hearts(x,y,n=5){for(let i=0;i<n;i++){const h=document.createElement('di
  $('app').appendChild(h);setTimeout(()=>h.remove(),1700)}}
 
 /* ============ EGG WORLD ============ */
-const EGG_SPECIES=['longneck','trex','trike','stego','ankylo','parasaur'];
+const EGG_SPECIES=['longneck','trex','trike','stego','ankylo','parasaur','spino','raptor','pachy','diplo','iguano'];
 const DINO_INFO={
  longneck:"It's a Brachiosaurus! It is super tall and eats leaves from the tops of trees.",
  trex:"It's a T-rex! The king of the dinosaurs, with big sharp teeth and tiny arms.",
@@ -1018,8 +1084,9 @@ const DINO_INFO={
  stego:"It's a Stegosaurus! It has big plates on its back and spikes on its tail.",
  ankylo:"It's an Ankylosaurus! It has armor like a tank and a club on its tail.",
  parasaur:"It's a Parasaurolophus! It has a long crest on its head and makes loud honking sounds.",
+ spino:"It's a Spinosaurus! It has a big sail on its back and loves to catch fish.",raptor:"It's a Velociraptor! A small, fast dinosaur with feathers and a big claw on each foot.",pachy:"It's a Pachycephalosaurus! It has a thick, round head like a helmet.",diplo:"It's a Diplodocus! It has a super long neck and a super long tail.",iguano:"It's an Iguanodon! It has a spiky thumb on each hand.",
  bibbi:"Surprise! It's Bibbi-Cat! Bibbi-Cat is the best snuggle bunny in the whole world!"};
-const FACES={longneck:{e:[178,30,5],m:[189,46,22]},trex:{e:[166,42,6],m:[182,68,52]},trike:{e:[180,94,5],m:[198,112,22]},
+const FACES={spino:{e:[156,67,5],m:[182,77,24]},raptor:{e:[160,53,5],m:[180,64,22]},pachy:{e:[166,62,5],m:[185,76,16]},diplo:{e:[200,42,4],m:[209,51,10]},iguano:{e:[170,58,5],m:[185,75,18]},longneck:{e:[178,30,5],m:[189,46,22]},trex:{e:[166,42,6],m:[182,68,52]},trike:{e:[180,94,5],m:[198,112,22]},
  stego:{e:[188,116,4],m:[197,127,14]},bibbi:{e:[122,62,4],m:[110,86,14],col:'#c1c4cd'},ankylo:{e:[186,113,4.5],m:[197,126,14]},parasaur:{e:[174,56,5],m:[192,70,22]}};
 function moodFaces(svg,f,c){const [ex,ey,r]=f.e,[mx,my,w]=f.m,IK=f.ink||INK;
  const cover=`<circle cx="${ex}" cy="${ey}" r="${r*1.7}" fill="${c}"/><ellipse cx="${mx}" cy="${my}" rx="${w*.6}" ry="${w*.32+4}" fill="${c}"/>`;
@@ -1135,7 +1202,7 @@ function sparksIn(par,x,y,n,r=90){for(let i=0;i<n;i++){const a=Math.random()*Mat
 function relPt(par,el){const a=par.getBoundingClientRect(),b=el.getBoundingClientRect();return[b.left-a.left+b.width/2,b.top-a.top+b.height/2]}
 
 /* ============ MEMORY (hide & seek pairs) ============ */
-const DINOS={longneck:1,trex:1,trike:1,stego:1,ankylo:1,parasaur:1};
+const DINOS={longneck:1,trex:1,trike:1,stego:1,ankylo:1,parasaur:1,spino:1,raptor:1,pachy:1,diplo:1,iguano:1};
 const SEA_POOL=['orca','hammer','gwhite','octopus','crab','starfish','fish'];
 const COVERS=[['rock',()=>ART.rock()],['rock',()=>ART.rock('#8a7fa8')],['weed',()=>ART.seaweed()],['coral',()=>ART.coral()],['chest',()=>ART.chest()],
  ['clam',()=>ART.clam()],['wreck',()=>ART.wreck()],['barrel',()=>ART.barrel()],['weed',()=>ART.anemone()],['sponge',()=>ART.sponge()],['brain',()=>ART.brain()]];
@@ -1225,6 +1292,11 @@ const FEED=[
  {t:'stego',bg:'land',d:['plant'],face:{e:[188,116,4],m:[197,127,14]},m:[.9,.72]},
  {t:'ankylo',bg:'land',d:['plant'],face:{e:[186,113,4.5],m:[197,126,14]},m:[.9,.7]},
  {t:'parasaur',bg:'land',d:['plant'],face:{e:[174,56,5],m:[192,70,22]},m:[.88,.39]},
+ {t:'spino',bg:'land',d:['fish'],face:{e:[156,67,5],m:[182,77,24]},m:[.86,.43]},
+ {t:'raptor',bg:'land',d:['meat','rodent'],face:{e:[160,53,5],m:[180,64,22]},m:[.84,.36]},
+ {t:'pachy',bg:'land',d:['plant'],face:{e:[166,62,5],m:[185,76,16]},m:[.85,.42]},
+ {t:'diplo',bg:'land',d:['plant'],face:{e:[200,42,4],m:[209,51,10]},m:[.95,.29]},
+ {t:'iguano',bg:'land',d:['plant'],face:{e:[170,58,5],m:[185,75,18]},m:[.86,.42]},
  {t:'eagle',bg:'air',d:['fish','rodent'],face:{e:[165,60,4.5],m:[186,70,14],col:'#fff'},m:[.88,.4]},
  {t:'vulture',bg:'air',d:['meat'],face:{e:[173,48,4],m:[190,58,10],col:'#e8a09a'},m:[.88,.33]},
  {t:'ptero',bg:'air',d:['fish'],face:{e:[156,66,4.5],m:[184,78,16]},m:[.88,.45]},
@@ -1563,10 +1635,10 @@ const COLLECT=[
  ['sea','octopus','An octopus has eight arms.'],['sea','crab','Crabs walk sideways!'],['sea','starfish','A starfish has five arms.'],['sea','fish','Fish breathe under water with gills.'],
  ['land','trex',DINO_INFO.trex],['land','longneck',DINO_INFO.longneck],['land','trike',DINO_INFO.trike],['land','stego',DINO_INFO.stego],
  ['land','ankylo',DINO_INFO.ankylo],['land','parasaur',DINO_INFO.parasaur],['land','spider','Spiders have eight legs and spin webs.'],
- ['land','snake','Snakes have no legs. They slither!'],['land','bibbi','Bibbi-Cat is the best snuggle bunny in the whole world!'],
+ ['land','snake','Snakes have no legs. They slither!'],['land','spino',DINO_INFO.spino],['land','raptor',DINO_INFO.raptor],['land','pachy',DINO_INFO.pachy],['land','diplo',DINO_INFO.diplo],['land','iguano',DINO_INFO.iguano],['land','bibbi','Bibbi-Cat is the best snuggle bunny in the whole world!'],
  ['air','eagle','Eagles have super sharp eyes.'],['air','vulture','Vultures fly high in the sky and look for food.'],
  ['air','ptero','Pterodactyls could fly, but they were not birds.'],['air','bat','Bats sleep upside down!']].map(([h,k,f])=>({h,k,f}));
-const ALB_COL={longneck:0,trex:1,trike:2,stego:3,parasaur:4,ankylo:5,snake:1,ptero:0};
+const ALB_COL={longneck:0,trex:1,trike:2,stego:3,parasaur:4,ankylo:5,spino:2,raptor:4,pachy:5,diplo:3,iguano:1,snake:1,ptero:0};
 function stickerArt(k){return k in ALB_COL?ART[k](...DINO_COLORS[ALB_COL[k]]):k==='fish'?ART.fish():ART[k]()}
 const ALBUM=new Set(STORE.get('album',[]));
 let toastT=0;
