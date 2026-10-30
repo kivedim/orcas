@@ -168,7 +168,8 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 @keyframes enter{from{transform:translateX(80vw)}to{transform:translateX(-50%)}}
 @keyframes leave{to{transform:translateX(-160vw)}}
 @keyframes floatup{0%{transform:scale(.4);opacity:1}100%{transform:translateY(-30vh) scale(1.3);opacity:0}}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01s !important;transition-duration:.01s !important}}
+@media (prefers-reduced-motion:reduce){*{animation-iteration-count:1 !important;transition-duration:.01s !important}
+ .world.hero .disc,.again,.o-waves,.stars,.spot.open .creature .bob{animation:none !important}}
 </style>
 </head>
 <body>
