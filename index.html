@@ -122,18 +122,29 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 
 /* ---------- Feed ---------- */
 #feed{background:#0c4f7e}
-.fworld{position:absolute;left:0;right:0;top:0;height:200%;transition:transform 1.2s cubic-bezier(.6,0,.3,1);pointer-events:none;
-  background:linear-gradient(#bfeeff 0%,#e8f8ff 21%,#a5df92 22.4%,#79c46a 44%,#e9cf8f 45.6%,#f3d48c 48.4%,#9fe2f7 48.4%,#5cc3e8 50%,#2c9fd0 56%,#1c7fb4 76%,#0c4f7e 100%)}
-.fworld.sea{transform:translateY(-50%)}
+.fworld{position:absolute;left:0;right:0;top:0;height:300%;transition:transform 1.3s cubic-bezier(.6,0,.3,1);pointer-events:none;
+  background:linear-gradient(#4fa8ea 0%,#86cff6 16%,#bfeeff 33.3%,#e8f8ff 47.3%,#a5df92 48.27%,#79c46a 62.67%,#e9cf8f 63.73%,#f3d48c 65.6%,#9fe2f7 65.6%,#5cc3e8 66.67%,#2c9fd0 70.7%,#1c7fb4 84%,#0c4f7e 100%)}
 .fworld.instant{transition:none}
-.fsun{position:absolute;top:3%;right:10%;width:15vmin;aspect-ratio:1;border-radius:50%;background:var(--sun);box-shadow:0 0 0 2vmin #ffe58a77}
+.fsun{position:absolute;top:35.4%;right:10%;width:15vmin;aspect-ratio:1;border-radius:50%;background:var(--sun);box-shadow:0 0 0 2vmin #ffe58a77}
 .fcloud{position:absolute;width:24vmin;height:7vmin;border-radius:999px;background:#fff;opacity:.92}
 .fcloud::before{content:"";position:absolute;left:18%;top:-55%;width:42%;aspect-ratio:1;border-radius:50%;background:#fff}
-.fhills{position:absolute;left:0;width:100%;top:18.2%;height:4.4%}
-.fgrass{position:absolute;left:0;width:100%;top:30%;height:12%}
-.fray{position:absolute;top:50%;width:14%;height:24%;background:linear-gradient(#ffffff38,transparent);transform:skewX(-14deg)}
-.fweed{position:absolute;left:0;width:100%;bottom:0;height:7%}
+.fcloud::after{content:"";position:absolute;left:48%;top:-35%;width:32%;aspect-ratio:1;border-radius:50%;background:#fff}
+.frainbow{position:absolute;left:8%;top:8%;width:84%;aspect-ratio:2/1;border-radius:999px 999px 0 0;opacity:.45;
+  background:radial-gradient(circle at 50% 100%,transparent 52%,#a78bfa 52% 56%,#60a5fa 56% 60%,#4ade80 60% 64%,#facc15 64% 68%,#fb923c 68% 72%,#f87171 72% 76%,transparent 76%)}
+.fbirds{position:absolute;left:58%;top:22%;width:22%;height:2%;opacity:.5}
+.fhills{position:absolute;left:0;width:100%;top:45.47%;height:2.93%}
+.fgrass{position:absolute;left:0;width:100%;top:53.33%;height:8%}
+.fray{position:absolute;top:66.67%;width:14%;height:16%;background:linear-gradient(#ffffff38,transparent);transform:skewX(-14deg)}
+.fweed{position:absolute;left:0;width:100%;bottom:0;height:4.67%}
 .fbub{position:absolute;border-radius:50%;border:2px solid #ffffff99;background:#ffffff22}
+.animal.air .inner{animation:hover 1.8s ease-in-out infinite}
+.animal .wing{transform-box:view-box;animation:flap .5s ease-in-out infinite alternate}
+.animal .wing.w2{animation-delay:-.08s}
+.animal .inner.fly .wing{animation-duration:.24s}
+.animal .inner.fly{animation:fly .5s ease-in-out infinite}
+@keyframes flap{from{transform:rotate(12deg)}to{transform:rotate(-24deg) scaleY(.82)}}
+@keyframes hover{0%,100%{transform:translateY(0)}50%{transform:translateY(-6%)}}
+@keyframes fly{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8%) rotate(3deg)}}
 .animal{position:absolute;left:50%;top:44%;width:min(92vw,52vh);transform:translate(-50%,-50%);touch-action:none;z-index:4}
 .animal .inner{transform-origin:50% 85%;transition:transform .2s}
 .animal .inner.walk{animation:walk .34s ease-in-out infinite}
@@ -243,7 +254,7 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 @keyframes leave{to{transform:translate(-160vw,-50%)}}
 @keyframes floatup{0%{transform:scale(.4);opacity:1}100%{transform:translateY(-30vh) scale(1.3);opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation-iteration-count:1 !important;transition-duration:.01s !important}
- .world.hero .disc,.again,.o-waves,#oLayer.shake,#egg.shk,.tear,.stars,.food,.animal .inner.walk,.animal .inner.swim,.spot.matched .creature .bob,.spot .cover.sway svg,.swimmer{animation:none !important}}
+ .world.hero .disc,.again,.o-waves,#oLayer.shake,#egg.shk,.tear,.stars,.food,.animal .wing,.animal.air .inner,.animal .inner.fly,.animal .inner.walk,.animal .inner.swim,.spot.matched .creature .bob,.spot .cover.sway svg,.swimmer{animation:none !important}}
 </style>
 </head>
 <body>
@@ -287,13 +298,16 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
   <!-- FEED -->
   <section class="screen" id="feed" hidden>
     <div class="fworld instant" id="fworld">
-      <div class="fsun"></div><div class="fcloud" style="top:4%;left:8%"></div><div class="fcloud" style="top:8%;left:56%;transform:scale(.7)"></div>
+      <div class="frainbow"></div>
+      <div class="fcloud" style="top:3%;left:6%;transform:scale(1.3)"></div><div class="fcloud" style="top:11%;left:60%"></div><div class="fcloud" style="top:20%;left:20%;transform:scale(.8)"></div><div class="fcloud" style="top:27%;left:66%;transform:scale(1.1)"></div>
+      <svg class="fbirds" viewBox="0 0 100 20"><g stroke="#2a5d80" stroke-width="2.5" fill="none" stroke-linecap="round"><path d="M2 10 Q8 2 14 10 Q20 2 26 10"/><path d="M40 16 Q45 9 50 16 Q55 9 60 16"/><path d="M72 6 Q77 0 82 6 Q87 0 92 6"/></g></svg>
+      <div class="fsun"></div><div class="fcloud" style="top:36%;left:8%"></div><div class="fcloud" style="top:38.7%;left:56%;transform:scale(.7)"></div>
       <svg class="fhills" viewBox="0 0 400 60" preserveAspectRatio="none"><path d="M0 60 Q60 8 130 38 Q200 0 270 34 Q340 12 400 38 V60Z" fill="#b9e6aa"/></svg>
       <svg class="fgrass" viewBox="0 0 400 100" preserveAspectRatio="none"><g fill="#6bb85d">
         <path d="M20 100 L26 70 L32 100Z M34 100 L42 64 L48 100Z M330 100 L338 66 L344 100Z M346 100 L352 74 L358 100Z"/></g>
         <g fill="#ff8fc8"><circle cx="90" cy="40" r="5"/><circle cx="300" cy="30" r="5"/></g><g fill="#ffd93d"><circle cx="90" cy="40" r="2"/><circle cx="300" cy="30" r="2"/><circle cx="200" cy="70" r="4"/></g></svg>
       <div class="fray" style="left:10%"></div><div class="fray" style="left:48%;width:9%"></div><div class="fray" style="left:76%"></div>
-      <div class="fbub" style="left:14%;top:62%;width:14px;height:14px"></div><div class="fbub" style="left:82%;top:70%;width:20px;height:20px"></div><div class="fbub" style="left:60%;top:84%;width:12px;height:12px"></div>
+      <div class="fbub" style="left:14%;top:74.7%;width:14px;height:14px"></div><div class="fbub" style="left:82%;top:80%;width:20px;height:20px"></div><div class="fbub" style="left:60%;top:89.3%;width:12px;height:12px"></div>
       <svg class="fweed" viewBox="0 0 400 60" preserveAspectRatio="none"><g fill="#2f9a5b"><path d="M20 60 Q8 30 26 0 Q30 30 34 60Z"/><path d="M40 60 Q50 34 38 10 Q60 30 52 60Z"/><path d="M350 60 Q340 30 356 4 Q362 30 366 60Z"/><path d="M372 60 Q382 36 372 16 Q392 34 384 60Z"/></g></svg>
     </div>
     <div class="animal" id="animal"><div class="inner" id="animalInner"></div></div>
@@ -601,6 +615,40 @@ ball:()=>`<svg class="art" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" 
  <path d="M50 8 Q22 30 24 88 Q8 72 8 50 Q8 20 50 8Z" fill="#ff5d5d"/><path d="M50 8 Q78 30 76 88 Q92 72 92 50 Q92 20 50 8Z" fill="#3fa9f5"/>
  <path d="M50 8 Q40 50 50 92" stroke="#ffd93d" stroke-width="9" fill="none"/>
  <circle cx="50" cy="50" r="42" fill="none" stroke="${INK}" stroke-width="3"/><circle cx="34" cy="28" r="6" fill="#fff" opacity=".7"/></svg>`,
+eagle:()=>`<svg class="art" viewBox="0 0 220 170">
+ <g class="wing w2" style="transform-origin:110px 76px"><path d="M110 76 Q84 12 30 2 Q48 28 38 38 Q58 42 52 54 Q74 58 94 86Z" fill="#4e321d"/></g>
+ <path d="M62 96 L18 82 L22 102 L14 116 L62 108Z" fill="#fff" stroke="#d9d4cc" stroke-width="3" stroke-linejoin="round"/>
+ <path d="M100 116 L96 134 M112 116 L112 134" stroke="#ffc23d" stroke-width="6" stroke-linecap="round"/>
+ <path d="M90 134 L102 134 M106 134 L118 134" stroke="#e09a00" stroke-width="4" stroke-linecap="round"/>
+ <ellipse cx="102" cy="98" rx="48" ry="25" fill="#6b4429" transform="rotate(-8 102 98)"/>
+ <path d="M134 86 Q140 62 156 54 L168 78 Q150 92 138 98Z" fill="#fff"/>
+ <circle cx="160" cy="62" r="23" fill="#fff"/>
+ <path d="M176 56 Q202 54 200 74 Q192 68 180 72Z" fill="#ffc23d" stroke="#e09a00" stroke-width="2.5" stroke-linejoin="round"/>
+ <path d="M154 50 L172 54" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>${eye(165,60,4.5)}
+ <g class="wing w1" style="transform-origin:112px 84px"><path d="M112 84 Q88 22 32 24 Q52 46 42 56 Q64 60 58 72 Q82 76 98 100Z" fill="#7a4f30"/>
+  <path d="M58 40 Q80 48 96 70 M50 58 Q74 62 90 84" stroke="#5a3a22" stroke-width="3" fill="none" stroke-linecap="round"/></g></svg>`,
+vulture:()=>`<svg class="art" viewBox="0 0 220 170">
+ <g class="wing w2" style="transform-origin:108px 80px"><path d="M108 80 Q80 10 22 4 Q40 32 30 42 Q52 46 44 60 Q70 62 90 90Z" fill="#2b252f"/></g>
+ <path d="M60 100 L20 92 L26 108 L18 118 L60 110Z" fill="#2b252f"/>
+ <path d="M102 118 L98 136 M114 118 L114 136" stroke="#9b8f87" stroke-width="6" stroke-linecap="round"/>
+ <ellipse cx="98" cy="100" rx="46" ry="27" fill="#3b3340" transform="rotate(-6 98 100)"/>
+ <path d="M150 82 Q160 64 166 56" stroke="#e8a09a" stroke-width="9" fill="none" stroke-linecap="round"/>
+ ${[0,1,2,3,4,5,6].map(i=>{const a=i*.9;return `<circle cx="${138+Math.cos(a)*12}" cy="${86+Math.sin(a)*10}" r="9" fill="#efe9de"/>`}).join('')}
+ <circle cx="170" cy="52" r="16" fill="#e8a09a"/><circle cx="160" cy="58" r="4" fill="#d9847d"/>
+ <path d="M182 46 Q200 48 198 64 Q190 58 182 60Z" fill="#c9c4bd" stroke="#8f8a84" stroke-width="2" stroke-linejoin="round"/>${eye(173,48,4)}
+ <g class="wing w1" style="transform-origin:112px 88px"><path d="M112 88 Q86 20 26 22 Q46 46 36 58 Q60 62 52 74 Q78 78 96 104Z" fill="#4a4150"/>
+  <path d="M30 26 L20 18 M40 40 L28 34 M44 58 L32 56" stroke="#4a4150" stroke-width="6" stroke-linecap="round"/></g></svg>`,
+ptero:(c,c2)=>`<svg class="art" viewBox="0 0 220 170">
+ <g class="wing w2" style="transform-origin:106px 84px"><path d="M106 84 L22 14 Q52 58 40 88 Q72 80 100 98Z" fill="${c}"/><path d="M106 84 L22 14 Q52 58 40 88 Q72 80 100 98Z" fill="#0003"/></g>
+ <path d="M96 100 L90 118 M108 102 L106 120" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+ <ellipse cx="110" cy="94" rx="30" ry="16" fill="${c}"/>
+ <path d="M130 88 Q140 74 148 70" stroke="${c}" stroke-width="12" fill="none" stroke-linecap="round"/>
+ <path d="M146 64 L100 34 L154 60Z" fill="${c}"/>
+ <path d="M158 66 L214 76 L158 82Z" fill="${c2}" stroke="${c}" stroke-width="3" stroke-linejoin="round"/>
+ <ellipse cx="154" cy="70" rx="16" ry="12" fill="${c}"/>${eye(156,66,4.5)}
+ <path d="M166 76 Q186 80 206 77" stroke="${INK}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+ <g class="wing w1" style="transform-origin:110px 90px"><path d="M110 90 L12 58 Q50 92 44 116 Q80 100 112 104Z" fill="${c2}" stroke="${c}" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M110 92 L12 58" stroke="${c}" stroke-width="7" stroke-linecap="round"/></g></svg>`,
 rock:(c='#8189ad')=>`<svg class="art" viewBox="0 0 200 200">
  <path d="M8 198 Q-2 124 50 98 Q82 60 134 76 Q194 92 196 152 Q200 198 168 198Z" fill="${c}"/>
  <path d="M54 110 Q86 80 128 90" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round" opacity=".35"/>
@@ -621,7 +669,7 @@ chest:()=>`<svg class="art" viewBox="0 0 200 200">
  <rect x="86" y="104" width="28" height="32" rx="6" fill="#ffd34d"/><circle cx="100" cy="118" r="5" fill="${INK}"/></svg>`,
 };
 const DINO_COLORS=[['#5aa9e6','#c4e5ff'],['#68c25e','#d6f5c9'],['#ff9f43','#ffe0b8'],['#b57cf2','#ecd9ff'],['#f06aa8','#ffd1e6'],['#2fc4b2','#c6f4ee']];
-const NAMES={hammer:'Hammerhead shark',ankylo:'Ankylosaurus',parasaur:'Parasaurolophus',gwhite:'Great white shark',trike:'Triceratops',stego:'Stegosaurus',orca:'Killer whale',shark:'Shark',longneck:'Brachiosaurus',trex:'T-rex',octopus:'Octopus',crab:'Crab',fish:'Fish',starfish:'Starfish'};
+const NAMES={eagle:'Eagle',vulture:'Vulture',ptero:'Pterodactyl',hammer:'Hammerhead shark',ankylo:'Ankylosaurus',parasaur:'Parasaurolophus',gwhite:'Great white shark',trike:'Triceratops',stego:'Stegosaurus',orca:'Killer whale',shark:'Shark',longneck:'Brachiosaurus',trex:'T-rex',octopus:'Octopus',crab:'Crab',fish:'Fish',starfish:'Starfish'};
 const $=id=>document.getElementById(id);
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -655,6 +703,7 @@ const sfx={
  cry(){tone(560,.45,'triangle',.18,400);setTimeout(()=>tone(500,.7,'triangle',.18,300),430)},
  whoosh(){noise(.45,.2,'bandpass',1000);tone(260,.4,'sine',.12,1000)},
  boing(){tone(180,.18,'sine',.25,520);setTimeout(()=>tone(520,.25,'sine',.2,160),160)},
+ squawk(){tone(1300,.16,'sawtooth',.09,750);setTimeout(()=>tone(1200,.22,'sawtooth',.09,650),180)},
  yuck(){tone(420,.4,'sawtooth',.07,140);tone(300,.35,'triangle',.18,110)},
  bonk(){tone(520,.2,'square',.13,110);noise(.14,.35,'lowpass',1600)},
  tense(){[0,380,760].forEach(d=>setTimeout(()=>tone(110,.3,'square',.09,92),d))},
@@ -855,7 +904,11 @@ const FEED=[
  {t:'stego',bg:'land',d:'plant',face:{e:[188,116,4],m:[197,127,14]},m:[.9,.72]},
  {t:'ankylo',bg:'land',d:'plant',face:{e:[186,113,4.5],m:[197,126,14]},m:[.9,.7]},
  {t:'parasaur',bg:'land',d:'plant',face:{e:[174,56,5],m:[192,70,22]},m:[.88,.39]},
+ {t:'eagle',bg:'air',d:'fish',face:{e:[165,60,4.5],m:[186,70,14],col:'#fff'},m:[.88,.4]},
+ {t:'vulture',bg:'air',d:'meat',face:{e:[173,48,4],m:[190,58,10],col:'#e8a09a'},m:[.88,.33]},
+ {t:'ptero',bg:'air',d:'fish',face:{e:[156,66,4.5],m:[184,78,16]},m:[.88,.45]},
 ];
+const CAM={air:0,land:1,sea:2},COLORED={...DINOS,ptero:1};
 function withYuck(svg,f,col){const [ex,ey,r]=f.e,[mx,my,w]=f.m,ink=f.ink||INK,c=f.col||col;
  const g=`<g class="yuckface"><circle cx="${ex}" cy="${ey}" r="${r*1.7}" fill="${c}"/>
  <path d="M${ex-r*1.2} ${ey-r} L${ex+r*.7} ${ey} L${ex-r*1.2} ${ey+r}" stroke="${ink}" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -868,19 +921,20 @@ const STAR='<svg viewBox="0 0 20 20"><path d="M10 1 L12.6 7 L19 7.4 L14 11.6 L15
 function drawFed(b){const e=$('fedcount');e.innerHTML=STAR+fd.fed;if(b)restart(e,'bump')}
 function feedInit(){if(!fd.started){fd.started=true;fd.order=shuffle(FEED);fd.fi=0;drawFed();nextAnimal(true)}}
 function nextAnimal(first){fd.cur=fd.order[fd.fi%fd.order.length];fd.wrong=0;fd.busy=true;const fw=$('fworld');
- if(fd.cam!==fd.cur.bg){fd.cam=fd.cur.bg;if(first)fw.classList.add('instant');else fw.classList.remove('instant');fw.classList.toggle('sea',fd.cam==='sea');
-  if(!first){sfx.whoosh();setTimeout(enterAnimal,1250);return}}
+ if(fd.cam!==fd.cur.bg){fd.cam=fd.cur.bg;if(first)fw.classList.add('instant');else fw.classList.remove('instant');fw.style.transform=`translateY(${-33.3333*CAM[fd.cam]}%)`;
+  if(!first){sfx.whoosh();setTimeout(enterAnimal,1350);return}}
  enterAnimal()}
 function enterAnimal(){const c=fd.cur,col=rnd(DINO_COLORS),an=$('animal'),inn=$('animalInner');
- const art=DINOS[c.t]?ART[c.t](...col):ART[c.t]();inn.innerHTML=withYuck(moodFaces(art,c.face,c.face.col||col[0]),c.face,col[0]);
- an.className='animal';an.getAnimations().forEach(a=>a.cancel());inn.className='inner '+(c.bg==='sea'?'swim':'walk');
+ const art=COLORED[c.t]?ART[c.t](...col):ART[c.t]();inn.innerHTML=withYuck(moodFaces(art,c.face,c.face.col||col[0]),c.face,col[0]);
+ an.className='animal'+(c.bg==='air'?' air':'');an.getAnimations().forEach(a=>a.cancel());inn.className='inner '+MOVE[c.bg];
  an.animate([{transform:'translate(calc(-50% - 100vw),-50%)'},{transform:'translate(-50%,-50%)'}],{duration:1500,easing:'cubic-bezier(.25,.6,.35,1)',fill:'backwards'});
- if(c.bg==='sea')sfx.bubble();else[0,340,680,1020].forEach(d=>setTimeout(()=>tone(120,.08,'triangle',.18,80),d));
+ if(c.bg==='sea')sfx.bubble();else if(c.bg==='air'){[0,250,500,750,1000].forEach(d=>setTimeout(()=>noise(.12,.18,'bandpass',500),d));setTimeout(sfx.squawk,700)}else[0,340,680,1020].forEach(d=>setTimeout(()=>tone(120,.08,'triangle',.18,80),d));
  setTimeout(()=>{inn.className='inner';fd.busy=false;dealTray();say('Here comes a hungry '+NAMES[c.t].toLowerCase()+'! What does it eat?')},1500)}
+const MOVE={sea:'swim',land:'walk',air:'fly'};
 function leaveAnimal(){const an=$('animal'),inn=$('animalInner');fd.busy=true;
  $('tray').querySelectorAll('.slot').forEach(s=>s.classList.add('out'));
- an.className='animal';inn.className='inner '+(fd.cur.bg==='sea'?'swim':'walk');
- an.animate([{transform:'translate(-50%,-50%)'},{transform:'translate(calc(-50% + 100vw),-50%)'}],{duration:1100,easing:'ease-in',fill:'forwards'});
+ an.className='animal'+(fd.cur.bg==='air'?' air':'');inn.className='inner '+MOVE[fd.cur.bg];
+ an.animate([{transform:'translate(-50%,-50%)'},{transform:`translate(calc(-50% + 100vw),${fd.cur.bg==='air'?'-110%':'-50%'})`}],{duration:1100,easing:'ease-in',fill:'forwards'});
  setTimeout(()=>{fd.fi++;if(fd.fi%fd.order.length===0)fd.order=shuffle(FEED);nextAnimal(false)},1150)}
 function dealTray(){const c=fd.cur,keys=Object.keys(FOOD),right=rnd(keys.filter(k=>FOOD[k].d===c.d));
  const silly=keys.filter(k=>!FOOD[k].d),other=keys.filter(k=>FOOD[k].d&&FOOD[k].d!==c.d);
@@ -888,7 +942,7 @@ function dealTray(){const c=fd.cur,keys=Object.keys(FOOD),right=rnd(keys.filter(
  const set=shuffle([right,...wrong]);$('tray').innerHTML='';
  set.forEach((k,i)=>{const s=document.createElement('div');s.className='slot';s.style.animationDelay=(i*.1)+'s';
   const f=document.createElement('div');f.className='food';f.dataset.k=k;f.style.animationDelay=(-i*.7)+'s';f.innerHTML=FOOD[k].art();s.appendChild(f);$('tray').appendChild(s);dragFood(f)})}
-$('animal').addEventListener('pointerdown',()=>{if(fd.busy)return;restart($('animal'),'chomp');DINOS[fd.cur.t]?sfx.roar():sfx.bubble()});
+$('animal').addEventListener('pointerdown',()=>{if(fd.busy)return;restart($('animal'),'chomp');fd.cur.bg==='air'?sfx.squawk():DINOS[fd.cur.t]?sfx.roar():sfx.bubble()});
 function mouthPoint(){const r=$('animal').getBoundingClientRect();return [r.left+r.width*fd.cur.m[0],r.top+r.height*fd.cur.m[1]]}
 function overAnimal(x,y){const r=$('animal').getBoundingClientRect(),p=r.width*.12;return x>r.left-p&&x<r.right+p&&y>r.top-p&&y<r.bottom+p}
 function dragFood(el){let sx,sy,dx=0,dy=0,down=false;
