@@ -241,7 +241,8 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 
 #egg.shk,#feed.shk{animation:shake .38s}
 .dino .sadface,.dino .gladface{opacity:0;transition:opacity .12s}
-.dino.sad .sadface,.dino.glad .gladface{opacity:1}
+.dino.sad .sadface,.dino.cry .sadface,.dino.glad .gladface{opacity:1}
+.dino:not(.cry) .tear,.dino:not(.cry) .cryonly,.dino.cry .sadonly{visibility:hidden}
 .tear{transform-box:fill-box;animation:tear 1s ease-in infinite}
 .tear.t2{animation-delay:.5s}
 @keyframes tear{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(34px);opacity:0}}
@@ -866,7 +867,7 @@ function moodFaces(svg,f,c){const [ex,ey,r]=f.e,[mx,my,w]=f.m,IK=f.ink||INK;
  const sad=`<g class="sadface">${cover}
   <path d="M${ex-r} ${ey-r*.2} Q${ex} ${ey+r*.9} ${ex+r} ${ey-r*.2}" stroke="${IK}" stroke-width="3" fill="none" stroke-linecap="round"/>
   <path d="M${ex-r*1.3} ${ey-r*2.3} L${ex+r*1.2} ${ey-r*1.6}" stroke="${IK}" stroke-width="3" stroke-linecap="round"/>
-  <ellipse cx="${mx}" cy="${my+2}" rx="${w*.22+3}" ry="${w*.18+4}" fill="${IK}"/><ellipse cx="${mx}" cy="${my+w*.12+4}" rx="${w*.12+2}" ry="${w*.06+2}" fill="#ff6b8b"/>
+  <g class="cryonly"><ellipse cx="${mx}" cy="${my+2}" rx="${w*.22+3}" ry="${w*.18+4}" fill="${IK}"/><ellipse cx="${mx}" cy="${my+w*.12+4}" rx="${w*.12+2}" ry="${w*.06+2}" fill="#ff6b8b"/></g><path class="sadonly" d="M${mx-w*.36} ${my+w*.14+2} Q${mx} ${my-w*.22} ${mx+w*.36} ${my+w*.14+2}" stroke="${IK}" stroke-width="3" fill="none" stroke-linecap="round"/>
   <path class="tear" d="M${ex} ${ey+r*.8} q-4 7 0 10 q4 -3 0 -10Z" fill="#6fd0ff" stroke="#2a8fc4" stroke-width="1"/>
   <path class="tear t2" d="M${ex+r*.6} ${ey+r*.8} q-4 7 0 10 q4 -3 0 -10Z" fill="#6fd0ff" stroke="#2a8fc4" stroke-width="1"/></g>`;
  const glad=`<g class="gladface">${cover}
@@ -893,15 +894,21 @@ function hatch(){egg.hatched=true;const eb=$('eggbox');eb.hidden=true;const stag
   stage.appendChild(s);setTimeout(()=>s.remove(),1000)}
  const d=$('dino'),t=egg.next.type;d.innerHTML=moodFaces(ART[t](...egg.next.col),FACES[t],FACES[t].col||egg.next.col[0]);d.className='dino';d.hidden=false;restart(d,'pop');
  if(t==='bibbi'){sfx.pop();setTimeout(sfx.giggle,200);setTimeout(()=>{sfx.tada();setMood('glad');const b=dinoBox(),par=$('egg');hearts(b.cx-20,b.cy+b.h*.3,10);
-   powIn(par,'SURPRISE!',par.clientWidth/2,b.top-10,'big');sparksIn(par,b.x,b.y,18,170);eggCaption(DINO_INFO[t]);say(DINO_INFO[t]);setTimeout(()=>setMood(''),2500)},600)}
+   powIn(par,'SURPRISE!',par.clientWidth/2,b.top-10,'big');sparksIn(par,b.x,b.y,18,170);eggCaption(DINO_INFO[t]);say(DINO_INFO[t]);setTimeout(()=>{if(egg.mood==='glad')setMood('')},2500)},600)}
  else{sfx.pop();setTimeout(sfx.roar,250);setTimeout(()=>{sfx.tada();eggCaption(DINO_INFO[t]);say(DINO_INFO[t])},700)}
  setTimeout(()=>{$('again').hidden=false},1300)}
-function setMood(m){const d=$('dino');d.classList.remove('sad','glad');if(m)d.classList.add(m);egg.mood=m;clearTimeout(egg.moodT)}
+function setMood(m){const d=$('dino');d.classList.remove('sad','glad','cry');if(m)d.classList.add(m);egg.mood=m;clearTimeout(egg.moodT);
+ clearInterval(egg.sobT);if(m==='cry')egg.sobT=setInterval(()=>{if(current!=='egg'||egg.mood!=='cry'||egg.busy)return;sfx.cry();const d=$('dino');
+  d.animate([{transform:'none'},{transform:'scale(1.03,.96)'},{transform:'none'},{transform:'scale(1.03,.96)'},{transform:'none'}],{duration:700});
+  if(Math.random()<.4)say(rnd(['Waaah!','Sniff, sniff.','I need a hug!']))},3200)}
 function dinoBox(){const par=$('egg'),a=par.getBoundingClientRect(),b=$('dino').getBoundingClientRect();return{x:b.left-a.left+b.width/2,y:b.top-a.top+b.height/2,w:b.width,h:b.height,top:b.top-a.top,bottom:b.bottom-a.top,left:b.left-a.left,right:b.right-a.left,cx:b.left+b.width/2,cy:b.top}}
 function hop(){$('dino').animate([{transform:'translateY(0)'},{transform:'translateY(-14%) scale(1.04,.97)'},{transform:'translateY(0) scale(1.06,.92)'},{transform:'translateY(0)'}],{duration:520,easing:'ease-out'})}
-function tapDino(){if(egg.busy)return;const b=dinoBox(),wasSad=egg.mood==='sad';setMood('glad');hop();sfx.giggle();hearts(b.cx-20,b.cy+b.h*.3,wasSad?8:5);
- if(wasSad)say(rnd(['There, there. All better!','Big hug! All better!']));else if(Math.random()<.55)say(rnd(['Hee hee!','Yay!','I love you!','That tickles!']));
- egg.moodT=setTimeout(()=>setMood(''),1800)}
+function hug(){$('dino').animate([{transform:'none'},{transform:'scale(.9,1.08)'},{transform:'scale(1.07,.94)'},{transform:'none'}],{duration:520,easing:'ease-out'})}
+function tapDino(){if(egg.busy)return;const b=dinoBox(),m=egg.mood,hx=b.cx-20,hy=b.cy+b.h*.3;
+ if(m==='cry'){setMood('sad');hug();hearts(hx,hy,3);tone(440,.25,'sine',.15,520);say(rnd(['There, there.','Big hug.','Shh, it\'s okay.']))}
+ else if(m==='sad'){setMood('');hug();hearts(hx,hy,4);tone(520,.25,'sine',.16,660);say(rnd(['Another hug!','Feeling a little better.','Sniff... thank you.']))}
+ else if(m===''){setMood('glad');hug();hop();sfx.giggle();hearts(hx,hy,7);say(rnd(['Yay! All better!','Hee hee! I feel happy!','Thank you for the hugs!']))}
+ else{hop();sfx.giggle();hearts(hx,hy,5);if(Math.random()<.55)say(rnd(['Hee hee!','Yay!','I love you!','That tickles!']))}}
 function fling(dir){if(egg.busy)return;egg.busy=true;setMood('');const d=$('dino'),b=dinoBox(),par=$('egg'),W=par.clientWidth;
  d.getAnimations().filter(a=>!(a instanceof CSSAnimation)).forEach(a=>a.cancel());d.style.transformOrigin='50% 55%';
  let kf,dur,at,ix,iy,txt;
@@ -920,9 +927,8 @@ function fling(dir){if(egg.busy)return;egg.busy=true;setMood('');const d=$('dino
    {transform:`translate(-${D*.4}px,-22%) rotate(-280deg)`,offset:.85},{transform:'rotate(-360deg)',offset:1}]}
  d.animate(kf,{duration:dur});
  setTimeout(()=>{sfx.bonk();powIn(par,txt,ix,iy-50);sparksIn(par,ix,iy,9,100);fxIn(par,'boom',ix,iy,600).innerHTML=BOOM;restart(par,'shk')},dur*at);
- setTimeout(()=>{d.style.transformOrigin='';setMood('sad');sfx.cry();say(rnd(['Ouch! Waaah!','Owie! That hurt!','Oh no! Waaah!']));egg.busy=false;
-  if(!egg.hint){egg.hint=true;setTimeout(()=>{if(egg.mood==='sad'){eggCaption('Tap the dino to give it a hug!');say('Tap the dino to give it a hug!')}},1700)}
-  egg.moodT=setTimeout(()=>{if(egg.mood==='sad')setMood('')},6000)},dur)}
+ setTimeout(()=>{d.style.transformOrigin='';setMood('cry');sfx.cry();say(rnd(['Ouch! Waaah!','Owie! That hurt!','Oh no! Waaah!']));egg.busy=false;
+  if(!egg.hint){egg.hint=true;setTimeout(()=>{if(egg.mood==='cry'){eggCaption('Tap to give it a hug! Three hugs make it happy again.');say('Tap the dino to give it a hug!')}},1700)}},dur)}
 let eggSw=null;
 $('egg').addEventListener('pointerdown',e=>{if(!egg.hatched||e.target.closest('button'))return;eggSw={x:e.clientX,y:e.clientY,onDino:!!e.target.closest('#dino')}});
 addEventListener('pointercancel',()=>eggSw=null);
