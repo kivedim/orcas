@@ -86,22 +86,34 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 .shelf > div{width:min(14vw,9vh);animation:popin .5s both}
 
 /* ---------- Memory (hide & seek pairs) ---------- */
-#hide{background:linear-gradient(#7fdcf5,#2a9fd0 45%,#0e5a8c)}
-.ray{pointer-events:none;position:absolute;top:-10%;width:18%;height:70%;background:linear-gradient(#ffffff40,transparent);transform:rotate(18deg);transform-origin:top}
-.bubble{pointer-events:none;position:absolute;bottom:-5%;border-radius:50%;border:2px solid #ffffffaa;background:#ffffff22;animation:rise linear infinite}
-.ledge{position:absolute;left:-6%;right:-6%;height:28px;border-radius:999px;background:var(--sand);box-shadow:inset 0 7px 0 #f8dea6,0 6px 0 #00000022;pointer-events:none}
+#hide .pow,#hide .spark,#hide .mbub{z-index:999}
+#hide{isolation:isolate;background:linear-gradient(#86def6 0,#3fb3dc 24%,#1f86ba 40%,#1f86ba 100%)}
+.ray{pointer-events:none;position:absolute;top:-10%;width:18%;height:62%;background:linear-gradient(#ffffff40,transparent);transform:rotate(18deg);transform-origin:top}
+.bubble{pointer-events:none;position:absolute;bottom:-5%;z-index:60;border-radius:50%;border:2px solid #ffffffaa;background:#ffffff22;animation:rise linear infinite}
+.floor{position:absolute;left:-15%;right:-15%;top:38%;bottom:-4%;pointer-events:none;border-radius:50% 50% 0 0/9% 9% 0 0;
+  background:linear-gradient(#7fb8c2 0,#c9c08f 14%,#e7cd8c 45%,#f3d48c 100%)}
+.floor::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(ellipse 30% 4% at 30% 40%,#ffffff30,transparent),radial-gradient(ellipse 25% 3% at 70% 62%,#ffffff2a,transparent),radial-gradient(ellipse 34% 4% at 40% 84%,#ffffff26,transparent)}
+.far{position:absolute;left:0;right:0;top:calc(38% - 64px);height:80px;pointer-events:none}
+.swimmer{position:absolute;left:0;width:46px;opacity:.38;pointer-events:none;animation:swimby linear infinite}
+.swimmer.rev{animation-name:swimback}
 .spot{position:absolute;touch-action:none;cursor:pointer}
-.spot .cover{position:absolute;inset:0;z-index:2;transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
+.spot::after{content:"";position:absolute;left:8%;right:8%;bottom:-3%;height:14%;border-radius:50%;background:radial-gradient(closest-side,#0000002e,transparent);z-index:0}
+.spot .cover{position:absolute;inset:0;z-index:2;transform-origin:50% 100%;transition:transform .45s cubic-bezier(.3,1.6,.5,1);
+  filter:saturate(calc(.62 + .38 * var(--k,1))) brightness(calc(1.14 - .14 * var(--k,1)))}
+.spot .cover.sway svg{transform-origin:50% 100%;animation:sway 3.2s ease-in-out infinite}
 .spot .creature{position:absolute;left:8%;width:84%;bottom:22%;z-index:1;opacity:0;transform:translateY(20%) scale(.3);
   transition:transform .5s cubic-bezier(.3,1.6,.5,1),opacity .18s;pointer-events:none}
 .spot.open .creature{opacity:1;transform:translateY(-56%) scale(1)}
-.spot.open .cover{transform:translateX(22%) rotate(9deg)}
-.spot.matched .cover{transform:translateX(26%) rotate(12deg) scale(.92)}
+.spot.open .cover{transform:translateX(24%) rotate(10deg)}
+.spot.matched .cover{transform:translateX(28%) rotate(13deg) scale(.92)}
 .spot.matched .creature .bob{animation:bob 1.6s ease-in-out infinite}
 .creature.wiggle .bob{animation:wiggle .5s !important}
-.lvl{position:absolute;top:30px;right:max(18px,env(safe-area-inset-right,0px));display:flex;gap:8px;z-index:30}
+.lvl{position:absolute;top:30px;right:max(18px,env(safe-area-inset-right,0px));display:flex;gap:8px;z-index:70}
 .lvl i{width:16px;height:16px;border-radius:50%;background:#ffffff55;border:2px solid #fff}
 .lvl i.on{background:var(--sun)}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes swimby{from{transform:translateX(-80px)}to{transform:translateX(calc(100vw + 80px))}}
+@keyframes swimback{from{transform:translateX(calc(100vw + 80px)) scaleX(-1)}to{transform:translateX(-80px) scaleX(-1)}}
 
 /* ---------- Feed ---------- */
 #feed{transition:background .6s}
@@ -207,7 +219,7 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 @keyframes leave{to{transform:translate(-160vw,-50%)}}
 @keyframes floatup{0%{transform:scale(.4);opacity:1}100%{transform:translateY(-30vh) scale(1.3);opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation-iteration-count:1 !important;transition-duration:.01s !important}
- .world.hero .disc,.again,.o-waves,#oLayer.shake,#egg.shk,.tear,.stars,.spot.matched .creature .bob{animation:none !important}}
+ .world.hero .disc,.again,.o-waves,#oLayer.shake,#egg.shk,.tear,.stars,.spot.matched .creature .bob,.spot .cover.sway svg,.swimmer{animation:none !important}}
 </style>
 </head>
 <body>
@@ -643,29 +655,44 @@ function relPt(par,el){const a=par.getBoundingClientRect(),b=el.getBoundingClien
 /* ============ MEMORY (hide & seek pairs) ============ */
 const DINOS={longneck:1,trex:1,trike:1,stego:1,ankylo:1,parasaur:1};
 const SEA_POOL=['orca','shark','gwhite','octopus','crab','starfish','fish'];
-const COVERS=[()=>ART.rock(),()=>ART.rock('#8a7fa8'),()=>ART.seaweed(),()=>ART.coral(),()=>ART.chest()];
-const LEVELS=[2,3,4];
+const COVERS=[['rock',()=>ART.rock()],['rock',()=>ART.rock('#8a7fa8')],['weed',()=>ART.seaweed()],['coral',()=>ART.coral()],['chest',()=>ART.chest()]];
+const LEVELS=[2,3,4],EMPTIES=[1,2,3];
 let mem={lvl:0,first:null,lock:false,done:0,started:false,n:0};
 function seaArt(t){return t==='fish'?ART.fish('#ffcf3f','#ff7a3d'):ART[t]()}
-function hideInit(){if(!mem.started){mem.started=true;for(let i=0;i<9;i++){const b=document.createElement('div');b.className='bubble';const s=8+Math.random()*22;
-  b.style.width=b.style.height=s+'px';b.style.left=Math.random()*100+'%';b.style.animationDuration=(7+Math.random()*6)+'s';b.style.animationDelay=(-Math.random()*10)+'s';$('hide').prepend(b)}
+function hideInit(){if(!mem.started){mem.started=true;const h=$('hide');
+  h.insertAdjacentHTML('afterbegin',`<div class="floor"></div><svg class="far" viewBox="0 0 400 80" preserveAspectRatio="none">
+   <path d="M0 80 L0 58 Q20 40 46 54 Q60 30 86 50 L100 80Z M150 80 Q160 52 190 58 Q214 44 240 62 L250 80Z M300 80 Q318 46 344 56 Q372 40 400 54 L400 80Z" fill="#2a7fa8" opacity=".55"/>
+   <g stroke="#2a7fa8" stroke-width="5" fill="none" stroke-linecap="round" opacity=".5"><path d="M120 80 Q112 50 124 20"/><path d="M130 80 Q138 54 128 30"/><path d="M270 80 Q262 56 274 34"/><path d="M380 80 Q372 60 384 40"/></g></svg>`);
+  [[18,22,'',0],[30,30,'rev',-9],[12,26,'',-15],[24,34,'rev',-4]].forEach(([top,dur,cls,del])=>{const f=document.createElement('div');f.className='swimmer '+cls;
+   f.style.top=top+'%';f.style.animationDuration=dur+'s';f.style.animationDelay=del+'s';f.innerHTML=ART.fish('#0d4f7a','#0d4f7a');h.appendChild(f)});
+  for(let i=0;i<9;i++){const b=document.createElement('div');b.className='bubble';const s=8+Math.random()*22;
+  b.style.width=b.style.height=s+'px';b.style.left=Math.random()*100+'%';b.style.animationDuration=(7+Math.random()*6)+'s';b.style.animationDelay=(-Math.random()*10)+'s';h.appendChild(b)}
   memRound()}else memLayout()}
 function memRound(){const n=LEVELS[mem.lvl];mem.n=n;mem.first=null;mem.lock=false;mem.done=0;
- const kinds=shuffle(SEA_POOL).slice(0,n),spots=shuffle([...kinds,...kinds]);
- $('reef').innerHTML=spots.map(t=>`<div class="spot" data-t="${t}"><div class="creature"><div class="bob">${seaArt(t)}</div></div><div class="cover">${rnd(COVERS)()}</div></div>`).join('');
- $('reef').querySelectorAll('.spot').forEach(sp=>sp.addEventListener('pointerdown',()=>tapSpot(sp)));memLayout();
- $('lvl').innerHTML=LEVELS.map((_,i)=>`<i class="${i<=mem.lvl?'on':''}"></i>`).join('')}
+ const kinds=shuffle(SEA_POOL).slice(0,n),spots=shuffle([...kinds,...kinds,...Array(EMPTIES[mem.lvl]).fill('empty')]);
+ $('reef').innerHTML=spots.map(t=>{const [ck,cf]=rnd(COVERS);return `<div class="spot" data-t="${t}"><div class="creature"><div class="bob">${t==='empty'?'':seaArt(t)}</div></div><div class="cover${ck==='weed'?' sway':''}">${cf()}</div></div>`}).join('');
+ $('reef').querySelectorAll('.spot').forEach((sp,i)=>{sp.addEventListener('pointerdown',()=>tapSpot(sp));const sw=sp.querySelector('.sway svg');if(sw)sw.style.animationDelay=(-i*.7)+'s'});
+ memLayout();$('lvl').innerHTML=LEVELS.map((_,i)=>`<i class="${i<=mem.lvl?'on':''}"></i>`).join('')}
 function memLayout(){const sp=[...$('reef').querySelectorAll('.spot')];if(!sp.length)return;const W=$('hide').clientWidth,H=$('hide').clientHeight,k=sp.length;
- const land=W>H;let cols=land?Math.min(4,k/2):2,rows=Math.ceil(k/cols);if(land&&k===4){cols=4;rows=1}
- const top=92,rowH=(H-top-16)/rows,colW=(W-24)/cols,s=Math.floor(Math.min(rowH*.62,colW*.82,200));
- $('reef').querySelectorAll('.ledge').forEach(l=>l.remove());
- for(let r=0;r<rows;r++){const ly=top+rowH*(r+1)-30;const l=document.createElement('div');l.className='ledge';l.style.top=ly+'px';l.style.zIndex=r*2;$('reef').prepend(l);
-  for(let c=0;c<cols;c++){const i=r*cols+c;if(i>=k)break;const el=sp[i],jit=(((i*37)%7)/7-.5)*colW*.14;
-   el.style.width=el.style.height=s+'px';el.style.left=(12+colW*c+colW/2-s/2+jit)+'px';el.style.top=(ly-s*.86)+'px';el.style.zIndex=r*2+1}}}
+ const y0=H*.38+H*.1,y1=H-12;let base=Math.min(W*.4,H*.25)*(k<=5?1:k<=8?.86:.76),placed=null;
+ for(let round=0;round<30&&!placed;round++,base*=.93){const P=[];let ok=true;
+  for(let i=0;i<k&&ok;i++){let got=null;
+   for(let t=0;t<250&&!got;t++){const y=y0+Math.random()*(y1-y0),kd=(y-y0)/(y1-y0),s=base*(.58+.52*kd),x=16+s/2+Math.random()*Math.max(1,W-32-s);
+    if(y-s*1.35<70&&x-s/2<90)continue;
+    if(P.every(q=>Math.abs(x-q.x)>(s+q.s)/2*.86||Math.abs(y-q.y)>Math.min(s,q.s)*.5))got={x,y,s,kd}}
+   if(got)P.push(got);else ok=false}
+  if(ok)placed=P}
+ if(!placed)return;
+ sp.forEach((el,i)=>{const q=placed[i];el.style.width=el.style.height=q.s+'px';el.style.left=(q.x-q.s/2)+'px';el.style.top=(q.y-q.s)+'px';
+  el.style.zIndex=Math.round(q.y);el.style.setProperty('--k',q.kd.toFixed(2))})}
 addEventListener('resize',()=>{if(current==='hide')memLayout()});
+function puff(sp){const par=$('hide'),[x,y]=relPt(par,sp);for(let i=0;i<8;i++){const el=fxIn(par,'mbub',x,y,1100),s=6+Math.random()*12;el.style.zIndex=999;
+ el.style.width=el.style.height=s+'px';el.style.setProperty('--dx',(Math.random()*2-1)*50+'px');el.style.setProperty('--dy',-(30+Math.random()*80)+'px')}}
 function tapSpot(sp){const t=sp.dataset.t,cr=sp.querySelector('.creature');
  if(sp.classList.contains('matched')){restart(cr,'wiggle');sfx.bubble();say(NAMES[t]);return}
  if(mem.lock||sp.classList.contains('open'))return;
+ if(t==='empty'){sp.classList.add('open');puff(sp);sfx.bubble();setTimeout(sfx.boop,180);if(Math.random()<.5)say(rnd(['Nobody here!','Empty!','Just bubbles!']));
+  setTimeout(()=>sp.classList.remove('open'),900);return}
  sp.classList.add('open');sfx.bubble();setTimeout(sfx.pop,160);say(NAMES[t]);
  if(!mem.first){mem.first=sp;return}
  const a=mem.first;mem.first=null;mem.lock=true;
