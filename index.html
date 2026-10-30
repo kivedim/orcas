@@ -150,6 +150,23 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 .stars{position:absolute;left:0;top:0;width:70px;height:70px;margin:-35px 0 0 -35px;pointer-events:none;animation:spin 1s linear infinite}
 .stars svg{position:absolute;width:22px}
 .act.shark{background:#ffe1e1}
+.pow{position:absolute;z-index:15;pointer-events:none;font-family:var(--display);font-weight:800;line-height:1;white-space:nowrap;
+  font-size:clamp(28px,8vmin,50px);color:#fff;-webkit-text-stroke:5px var(--ink);paint-order:stroke fill;
+  transform:translate(-50%,-50%);animation:pow .95s ease-out forwards}
+.pow.big{font-size:clamp(42px,12vmin,84px);color:#ffd93d;animation-duration:1.6s}
+.pow.zz{font-size:clamp(20px,5vmin,30px);color:#cfe9ff;-webkit-text-stroke:4px var(--ink);animation:zz 1.4s ease-out forwards}
+.boom{position:absolute;z-index:14;width:140px;height:140px;margin:-70px;pointer-events:none;animation:boom .55s ease-out forwards}
+.spark{position:absolute;z-index:14;width:20px;margin:-10px;pointer-events:none;animation:spark .75s ease-out forwards}
+.mbub{position:absolute;z-index:13;margin:-6px;border-radius:50%;border:2px solid #fff;background:#ffffff44;pointer-events:none;animation:mbub 1s ease-out forwards}
+#oLayer.shake{animation:shake .38s}
+.gw.flash{filter:brightness(2.4) saturate(.2)}
+.o-count div.bump{animation:popin .45s cubic-bezier(.3,1.8,.5,1)}
+@keyframes pow{0%{transform:translate(-50%,-50%) scale(.2) rotate(-14deg);opacity:1}25%{transform:translate(-50%,-50%) scale(1.3) rotate(5deg)}55%{transform:translate(-50%,-65%) scale(1) rotate(0);opacity:1}100%{transform:translate(-50%,-115%) scale(.9);opacity:0}}
+@keyframes zz{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}30%{opacity:1}100%{transform:translate(10%,-260%) scale(1.2) rotate(15deg);opacity:0}}
+@keyframes boom{0%{transform:scale(.15) rotate(0);opacity:1}60%{opacity:1}100%{transform:scale(1.5) rotate(30deg);opacity:0}}
+@keyframes spark{to{transform:translate(var(--dx),var(--dy)) rotate(200deg) scale(.3);opacity:0}}
+@keyframes mbub{to{transform:translate(var(--dx),var(--dy)) scale(1.4);opacity:0}}
+@keyframes shake{20%{transform:translate(-8px,4px)}40%{transform:translate(7px,-5px)}60%{transform:translate(-5px,3px)}80%{transform:translate(3px,-2px)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes ring{from{transform:scale(.3);opacity:1}to{transform:scale(7);opacity:0}}
 @keyframes drop{50%{transform:translate(calc(var(--dx) * .5),var(--dy))}100%{transform:translate(var(--dx),24px);opacity:0}}
@@ -169,7 +186,7 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 @keyframes leave{to{transform:translateX(-160vw)}}
 @keyframes floatup{0%{transform:scale(.4);opacity:1}100%{transform:translateY(-30vh) scale(1.3);opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation-iteration-count:1 !important;transition-duration:.01s !important}
- .world.hero .disc,.again,.o-waves,.stars,.spot.open .creature .bob{animation:none !important}}
+ .world.hero .disc,.again,.o-waves,#oLayer.shake,.stars,.spot.open .creature .bob{animation:none !important}}
 </style>
 </head>
 <body>
@@ -621,8 +638,17 @@ $('orca').addEventListener('pointerdown',ev=>{if(ev.target.closest('.act,.homebt
 $('orca').addEventListener('pointermove',ev=>{if(OW.down)setTarget(ev.clientX,ev.clientY)});
 addEventListener('pointerup',()=>OW.down=false);addEventListener('pointercancel',()=>OW.down=false);
 
-function eatFish(f){f.alive=false;f.el.hidden=true;if(OW.chase===f)OW.chase=null;sfx.chomp();OW.count++;drawCount();
- if(OW.count>=5){setTimeout(()=>{sfx.tada();caption('Hooray! The whole pod is full!');say('Hooray! The whole pod is full!');
+const BOOM='<svg viewBox="0 0 100 100"><path d="M50 2 L60 30 L88 14 L74 42 L98 50 L74 60 L88 86 L60 72 L50 98 L40 72 L12 86 L26 60 L2 50 L26 42 L12 14 L40 30Z" fill="#ffd93d" stroke="#ff8a3d" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="50" r="16" fill="#fff"/></svg>';
+function fxAt(cls,x,y,life=1700){const d=document.createElement('div');d.className=cls;d.style.left=x+'px';d.style.top=y+'px';$('oLayer').appendChild(d);setTimeout(()=>d.remove(),life);return d}
+function pow(txt,x,y,kind){const d=fxAt('pow'+(kind?' '+kind:''),clamp(x,70,OW.W-70),Math.max(y,40));d.textContent=txt}
+function sparks(x,y,n,r=90){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,d=r*(.5+Math.random()*.7),el=fxAt('spark',x,y,900);el.innerHTML=ART.star();
+ el.style.setProperty('--dx',Math.cos(a)*d+'px');el.style.setProperty('--dy',Math.sin(a)*d+'px')}}
+function mbubs(x,y,n,r=70){for(let i=0;i<n;i++){const el=fxAt('mbub',x,y,1100),s=6+Math.random()*14;el.style.width=el.style.height=s+'px';
+ el.style.setProperty('--dx',(Math.random()*2-1)*r+'px');el.style.setProperty('--dy',-(20+Math.random()*r*1.3)+'px');el.style.animationDelay=Math.random()*.15+'s'}}
+function shake(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){}restart($('oLayer'),'shake')}
+function eatFish(f){const ex=f.x,ey=f.y;pow(rnd(['CHOMP!','GULP!','YUM!','MUNCH!']),ex,ey-40);mbubs(ex,ey,12);sparks(ex,ey,6,70);OW.P.sq=1;
+ setTimeout(()=>{const last=$('oCount').children[OW.count-1];if(last)last.classList.add('bump')},0);f.alive=false;f.el.hidden=true;if(OW.chase===f)OW.chase=null;sfx.chomp();OW.count++;drawCount();
+ if(OW.count>=5){setTimeout(()=>{sfx.tada();pow('FULL!',OW.W/2,OW.H*.42,'big');sparks(OW.W/2,OW.H*.42,14,160);caption('Hooray! The whole pod is full!');say('Hooray! The whole pod is full!');
    OW.ents.forEach((e,i)=>setTimeout(()=>{if(!e.act){e.act=makeAct('jump',e);e.act.t=0}},i*400));
    setTimeout(()=>fact('pod'),2600);setTimeout(()=>{OW.count=0;drawCount()},2400)},300)}
  else if(OW.count===2&&!OW.seen.hunt)fact('hunt',300);else if(Math.random()<.5)say(rnd(['Yum!','Got it!','Chomp!']));
@@ -642,8 +668,8 @@ function oLoop(now){if(!OW.run)return;const dt=Math.min(.05,(now-OW.last)/1000);
    const ny=e.y+e.vy*dt;e.y=ny<yMin(e)?lerp(e.y,yMin(e),Math.min(1,dt*4)):Math.min(ny,yMax(e));
    if(e.vx>18)e.dir=1;else if(e.vx<-18)e.dir=-1;
    const tg=clamp(Math.atan2(e.vy,Math.max(Math.abs(e.vx),60))*180/Math.PI,-35,35);e.a+=(tg-e.a)*Math.min(1,dt*5)}
-  const bob=e.act?0:Math.sin(OW.time*2+e.ph)*3;
-  e.el.style.transform=`translate(${e.x-e.w/2}px,${e.y-e.h/2+bob}px) rotate(${e.a*e.dir}deg) scaleX(${e.dir})`}
+  const bob=e.act?0:Math.sin(OW.time*2+e.ph)*3,sq=e.sq||0;e.sq=sq*Math.pow(.004,dt);
+  e.el.style.transform=`translate(${e.x-e.w/2}px,${e.y-e.h/2+bob}px) rotate(${e.a*e.dir}deg) scaleX(${e.dir}) scale(${1+sq*.2},${1-sq*.16})`}
  updShark(dt);
  const [hx,hy]=pt(P,P.w*.4,P.h*.05);
  for(const f of OW.fish){if(!f.alive)continue;
@@ -667,7 +693,10 @@ function spawnShark(){if(OW.shark||!OW.P)return;const el=document.createElement(
  sfx.tense();caption(FACTS.shark);setTimeout(()=>say(FACTS.shark),300)}
 function hitShark(by,big){const sh=OW.shark;if(!sh||sh.cool>0||(sh.state!=='hunt'&&sh.state!=='enter'))return;
  sh.hp--;sh.cool=1.1;sh.state='dizzy';sh.t=0;const k=Math.sign(sh.x-by.x)||1;sh.vx=k*OW.W*.7;sh.vy=-60;sh.dir=-k;
- sfx.bonk();restart(OW.P.el,'x');say(rnd(['Bonk!','Boom!','Whack!','Bump!']));
+ const [ix0,iy0]=pt(by,by.w*.4,0),ix=(ix0+sh.x)/2,iy=(iy0+sh.y)/2;
+ fxAt('boom',ix,iy,600).innerHTML=BOOM;pow(rnd(['BONK!','BAM!','WHACK!','POW!']),ix,iy-50);sparks(ix,iy,9,110);mbubs(ix,iy,8);shake();
+ sh.el.classList.add('flash');setTimeout(()=>sh.el.classList.remove('flash'),160);by.sq=1;if(!by.act){by.vx=-k*OW.W*.5;by.vy=-40}
+ sfx.bonk();say(rnd(['Bonk!','Boom!','Whack!','Bump!']));
  if(OW.chase===sh)OW.chase=null;
  if(sh.hp<=0){sh.state='flip';sh.t=0}}
 function slapHit(e,tx){const sh=OW.shark;if(sh&&Math.abs(sh.x-tx)<sh.w*.8&&sh.y<OW.surf+sh.h*2.2)hitShark(e,true)}
@@ -688,11 +717,13 @@ function updShark(dt){const sh=OW.shark,W=OW.W;
  }else if(sh.state==='dizzy'){sh.vx*=Math.pow(.15,dt);sh.vy*=Math.pow(.15,dt);spin=Math.min(1,sh.t/.6)*360;
   if(sh.t>1.6){sh.state='hunt';sh.t=0}}
  else if(sh.state==='flip'){sh.vx*=Math.pow(.1,dt);sh.vy+=(OW.surf+(OW.H-BAR-OW.surf)*.35-sh.y)*dt;sh.flip=Math.min(1,sh.flip+dt*1.6);
+  if(sh.flip>.6&&!sh.powFlip){sh.powFlip=1;pow('FLIP!',sh.x,sh.y-sh.h,'big');sparks(sh.x,sh.y,12,140);shake()}
+  if(sh.t>1&&(sh.zt=(sh.zt||0)-dt)<0){sh.zt=.6;pow('z',sh.x+sh.dir*sh.w*.25,sh.y-sh.h*.2,'zz')}
   if(sh.t>.5&&!sh.saidFlip){sh.saidFlip=1;caption(FACTS.flip);say('Flip! '+FACTS.flip)}
   if(sh.t>4.2){sh.state='leave';sh.t=0;sh.dir=sh.x<W/2?-1:1}}
  else if(sh.state==='leave'){sh.flip=Math.max(0,sh.flip-dt*2);sh.vx=lerp(sh.vx,sh.dir*W*.9,Math.min(1,dt*2));sh.vy*=.95;
   if(sh.x<-sh.w||sh.x>W+sh.w){sh.el.remove();sh.st.remove();sh.alive=false;OW.shark=null;OW.sharkWait=30;
-   sfx.tada();caption('Hooray! The orcas won!');say('Hooray! The orcas won!');
+   sfx.tada();pow('ORCAS WIN!',OW.W/2,OW.H*.45,'big');sparks(OW.W/2,OW.H*.45,16,180);mbubs(OW.W/2,OW.H*.55,20,140);caption('Hooray! The orcas won!');say('Hooray! The orcas won!');
    OW.ents.forEach((e,i)=>setTimeout(()=>{if(!e.act){e.act=makeAct('jump',e);e.act.t=0}},i*400));
    setTimeout(()=>{caption(FACTS.win);say(FACTS.win)},2600);return}}
  sh.x+=sh.vx*dt;sh.y+=sh.vy*dt;
