@@ -179,6 +179,11 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 @keyframes spark{to{transform:translate(var(--dx),var(--dy)) rotate(200deg) scale(.3);opacity:0}}
 @keyframes mbub{to{transform:translate(var(--dx),var(--dy)) scale(1.4);opacity:0}}
 @keyframes shake{20%{transform:translate(-8px,4px)}40%{transform:translate(7px,-5px)}60%{transform:translate(-5px,3px)}80%{transform:translate(3px,-2px)}}
+.shp{position:absolute;left:0;top:0;z-index:12;display:flex;gap:2px;transform:translate(-50%,-50%);pointer-events:none}
+.shp svg{width:22px}
+.shp.bump{animation:popin .4s cubic-bezier(.3,1.8,.5,1)}
+.pow.grr{color:#ff5d5d;font-size:clamp(22px,6vmin,36px)}
+.pow.ouch{color:#ff8fa3}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes ring{from{transform:scale(.3);opacity:1}to{transform:scale(7);opacity:0}}
 @keyframes drop{50%{transform:translate(calc(var(--dx) * .5),var(--dy))}100%{transform:translate(var(--dx),24px);opacity:0}}
@@ -761,7 +766,7 @@ function mkEnt(kind,s){const el=document.createElement('div');el.className='orca
 function mkFish(){const el=document.createElement('div');el.className='fishy';el.innerHTML=ART.fish(rnd(['#ffcf3f','#ff8a3d','#c3e4ff','#ff9fb8','#b6f07a']),'#fff3c4');
  $('oLayer').appendChild(el);const f={el,alive:true};spawnFish(f,true);return f}
 function spawnFish(f,anywhere){const W=OW.W;f.x=anywhere?40+Math.random()*(W-80):(Math.random()<.5?-30:W+30);f.dir=f.x<W/2?1:-1;
- f.vx=f.dir*(30+Math.random()*40);f.baseY=OW.surf+50+Math.random()*Math.max(40,OW.H-BAR-OW.surf-110);f.ph=Math.random()*6;f.alive=true;f.el.hidden=false;f.el.classList.remove('ping')}
+ f.vx=f.dir*(30+Math.random()*40);f.baseY=OW.surf+50+Math.random()*Math.max(40,OW.H-BAR-OW.surf-110);f.ph=Math.random()*6;f.alive=true;f.el.hidden=false;f.el.classList.remove('ping');f.y=f.baseY;f.vy=0;f.cruise=Math.abs(f.vx)}
 function orcaInit(){OW.run=true;if(!OW.started){OW.started=true;$('oLayer').innerHTML='';measure();
   const mom=mkEnt('mom',1.15),calf=mkEnt('calf',.62),P=mkEnt('player',1);OW.ents=[mom,calf,P];OW.P=P;
   P.x=OW.W*.55;P.y=OW.surf+(OW.H-BAR-OW.surf)*.45;mom.x=P.x-P.w;mom.y=P.y-20;calf.x=P.x-P.w*1.6;calf.y=P.y+30;OW.tx=P.x;OW.ty=P.y;
@@ -858,15 +863,25 @@ function oLoop(now){if(!OW.run)return;const dt=Math.min(.05,(now-OW.last)/1000);
    if(e.vx>18)e.dir=1;else if(e.vx<-18)e.dir=-1;
    const tg=clamp(Math.atan2(e.vy,Math.max(Math.abs(e.vx),60))*180/Math.PI,-35,35);e.a+=(tg-e.a)*Math.min(1,dt*5)}
   const bob=e.act?0:Math.sin(OW.time*2+e.ph)*3,sq=e.sq||0;e.sq=sq*Math.pow(.004,dt);
+  if(e===P){P.hurt=Math.max(0,(P.hurt||0)-dt);e.el.style.opacity=P.hurt>0&&Math.floor(P.hurt*12)%2?.35:1;e.el.style.filter=P.hurt>.9?'drop-shadow(0 0 10px #ff4d4d)':''}
   e.el.style.transform=`translate(${e.x-e.w/2}px,${e.y-e.h/2+bob}px) rotate(${e.a*e.dir}deg) scaleX(${e.dir}) scale(${1+sq*.2},${1-sq*.16})`}
  updShark(dt);
  const [hx,hy]=pt(P,P.w*.4,P.h*.05);
+ const fleeR=P.w*1.2,fleeMax=W*.4,fTop=OW.surf+26,fBot=OW.H-BAR-18,ease6=Math.min(1,dt*6);
  for(const f of OW.fish){if(!f.alive)continue;
-  f.x+=f.vx*dt;if((f.x<24&&f.vx<0)||(f.x>W-24&&f.vx>0)||Math.random()<dt*.12){f.vx=-f.vx}f.dir=f.vx>0?1:-1;
-  if(f.x<-40||f.x>W+40)f.vx=(f.x<0?1:-1)*Math.abs(f.vx);
-  f.y=f.baseY+Math.sin(OW.time*1.6+f.ph)*12;
-  if(Math.hypot(f.x-hx,f.y-hy)<P.w*.24){eatFish(f);continue}
-  f.el.style.transform=`translate(${f.x-22}px,${f.y-14}px) scaleX(${f.dir})`}
+  const ax=f.x-P.x,ay=f.y-P.y,d=Math.hypot(ax,ay)||1;
+  if(d<fleeR){const k=.6+.4*(1-d/fleeR),jig=Math.sin(OW.time*9+f.ph)*.45;
+   const ux=ax/d-ay/d*jig,uy=ay/d+ax/d*jig;f.vx+=(ux*fleeMax*k-f.vx)*ease6;f.vy+=(uy*fleeMax*k-f.vy)*ease6;f.baseY=clamp(f.y,fTop,fBot);
+   if(!f.fleeing){f.fleeing=true;if(Math.random()<.35)tone(1500,.06,'sine',.06,2100)}}
+  else{f.fleeing=false;const sg=f.vx>=0?1:-1;f.vx+=(sg*f.cruise-f.vx)*Math.min(1,dt*1.5);f.vy+=((f.baseY-f.y)*.8-f.vy)*Math.min(1,dt*2);
+   if(Math.random()<dt*.1)f.vx=-f.vx}
+  f.x+=f.vx*dt;f.y+=f.vy*dt;
+  if(f.x<20){f.x=20;f.vx=Math.abs(f.vx)}else if(f.x>W-20){f.x=W-20;f.vx=-Math.abs(f.vx)}
+  if(f.y<fTop){f.y=fTop;f.vy=Math.abs(f.vy)}else if(f.y>fBot){f.y=fBot;f.vy=-Math.abs(f.vy)}
+  if(Math.abs(f.vx)>5)f.dir=f.vx>0?1:-1;
+  if(Math.hypot(f.x-hx,f.y-hy)<P.w*.27){eatFish(f);continue}
+  const wob=f.fleeing?Math.sin(OW.time*30)*6:0;
+  f.el.style.transform=`translate(${f.x-22}px,${f.y-14+Math.sin(OW.time*1.6+f.ph)*4}px) scaleX(${f.dir}) rotate(${wob}deg)`}
  requestAnimationFrame(oLoop)}
 
 /* ---- great white shark showdown ---- */
@@ -877,17 +892,33 @@ function spawnShark(){if(OW.shark||!OW.P)return;const el=document.createElement(
  st.querySelectorAll('div').forEach(d=>d.firstChild.style.width='22px');$('oLayer').appendChild(st);
  const w=OW.base*1.1,fromRight=OW.P.x<OW.W/2;
  const sh={el,st,w,h:w*140/240,x:fromRight?OW.W+w*.6:-w*.6,y:OW.surf+(OW.H-BAR-OW.surf)*(.3+Math.random()*.4),vx:0,vy:0,dir:fromRight?-1:1,a:0,flip:0,
-  hp:3,state:'enter',t:0,cool:0,alive:true,wx:0,wy:0};
+  hp:3,state:'enter',t:0,cool:0,alive:true,wx:0,wy:0,atk:4};
  el.style.width=w+'px';el.style.height=sh.h+'px';OW.shark=sh;
+ sh.hpEl=document.createElement('div');sh.hpEl.className='shp';$('oLayer').appendChild(sh.hpEl);drawShp();
  sfx.tense();caption(FACTS.shark);setTimeout(()=>say(FACTS.shark),300)}
-function hitShark(by,big){const sh=OW.shark;if(!sh||sh.cool>0||(sh.state!=='hunt'&&sh.state!=='enter'))return;
- sh.hp--;sh.cool=1.1;sh.state='dizzy';sh.t=0;const k=Math.sign(sh.x-by.x)||1;sh.vx=k*OW.W*.7;sh.vy=-60;sh.dir=-k;
+function drawShp(){const sh=OW.shark;if(!sh)return;sh.hpEl.innerHTML=[0,1,2].map(i=>ART.heart(i<sh.hp)).join('');restart(sh.hpEl,'bump')}
+function hitShark(by,big){const sh=OW.shark;if(!sh||sh.cool>0||!['hunt','enter','windup'].includes(sh.state))return;
+ sh.hp--;drawShp();sh.atk=2.5+Math.random()*2;sh.cool=1.1;sh.state='dizzy';sh.t=0;const k=Math.sign(sh.x-by.x)||1;sh.vx=k*OW.W*.7;sh.vy=-60;sh.dir=-k;
  const [ix0,iy0]=pt(by,by.w*.4,0),ix=(ix0+sh.x)/2,iy=(iy0+sh.y)/2;
  fxAt('boom',ix,iy,600).innerHTML=BOOM;pow(rnd(['BONK!','BAM!','WHACK!','POW!']),ix,iy-50);sparks(ix,iy,9,110);mbubs(ix,iy,8);shake();
  sh.el.classList.add('flash');setTimeout(()=>sh.el.classList.remove('flash'),160);by.sq=1;if(!by.act){by.vx=-k*OW.W*.5;by.vy=-40}
  sfx.bonk();say(rnd(['Bonk!','Boom!','Whack!','Bump!']));
  if(OW.chase===sh)OW.chase=null;
  if(sh.hp<=0){sh.state='flip';sh.t=0}}
+function bumpCheck(sh){const P=OW.P;if(P.hurt>0)return;const [hx,hy]=pt(P,P.w*.4,P.h*.05);
+ if(Math.abs(hx-sh.x)<sh.w*.45&&Math.abs(hy-sh.y)<sh.h*.55)hitShark(P)}
+function bite(sh){const P=OW.P,k=Math.sign(P.x-sh.x)||1;
+ sh.hp=Math.min(3,sh.hp+1);drawShp();sh.state='retreat';sh.t=0;sh.cool=.8;
+ P.hurt=1.6;P.sq=1;if(!P.act){P.vx=k*OW.W*.7;P.vy=-50}
+ const ix=(sh.x+P.x)/2,iy=(sh.y+P.y)/2;pow('OUCH!',ix,iy-50,'ouch');sparks(ix,iy,6,80);shake();
+ sfx.chomp();tone(1500,.18,'sine',.22,700);setTimeout(()=>tone(1100,.35,'sine',.2,450),170);
+ if(OW.count>0){OW.count--;drawCount();stealFish(sh);setTimeout(()=>say(rnd(['Ouch! The shark took a fish!','Ow! Sneaky shark!'])),250)}
+ else setTimeout(()=>say(rnd(['Ouch!','Ow, ow, ow!'])),250)}
+function stealFish(sh){const par=$('orca'),a=par.getBoundingClientRect(),slot=$('oCount').children[OW.count].getBoundingClientRect();
+ const el=document.createElement('div');el.className='fishy';el.innerHTML=ART.fish('#ffcf3f','#ff8a3d');$('oLayer').appendChild(el);
+ const x0=slot.left-a.left,y0=slot.top-a.top,x1=sh.x+sh.dir*sh.w*.4-22,y1=sh.y-14;
+ el.animate([{transform:`translate(${x0}px,${y0}px) scale(1.2)`},{transform:`translate(${(x0+x1)/2}px,${Math.min(y0,y1)-40}px) rotate(200deg)`},{transform:`translate(${x1}px,${y1}px) scale(.3) rotate(400deg)`}],{duration:700,easing:'ease-in'});
+ setTimeout(()=>{el.remove();tone(160,.2,'square',.12,80)},700)}
 function slapHit(e,tx){const sh=OW.shark;if(sh&&Math.abs(sh.x-tx)<sh.w*.8&&sh.y<OW.surf+sh.h*2.2)hitShark(e,true)}
 function updShark(dt){const sh=OW.shark,W=OW.W;
  if(!sh){if(!OW.P.act){OW.sharkWait-=dt;if(OW.sharkWait<=0){OW.sharkWait=28;spawnShark()}}return}
@@ -901,17 +932,27 @@ function updShark(dt){const sh=OW.shark,W=OW.W;
   const [mx,my]=[sh.x+sh.dir*sh.w*.42,sh.y+sh.h*.08];
   if(target&&Math.hypot(target.x-mx,target.y-my)<sh.w*.2){target.alive=false;target.el.hidden=true;if(OW.chase===target)OW.chase=null;tone(160,.2,'square',.12,80);
    if(Math.random()<.6)say(rnd(['Hey! The shark took a fish!','Oh no, sneaky shark!']));setTimeout(()=>spawnFish(target,false),2500)}
-  for(const e of OW.ents){if(e.act&&e!==OW.P)continue;const [hx,hy]=pt(e,e.w*.4,e.h*.05);
-   if(Math.abs(hx-sh.x)<sh.w*.45&&Math.abs(hy-sh.y)<sh.h*.55){hitShark(e);break}}
- }else if(sh.state==='dizzy'){sh.vx*=Math.pow(.15,dt);sh.vy*=Math.pow(.15,dt);spin=Math.min(1,sh.t/.6)*360;
-  if(sh.t>1.6){sh.state='hunt';sh.t=0}}
+  sh.atk-=dt;if(sh.state==='hunt'&&sh.atk<=0&&Math.hypot(OW.P.x-sh.x,OW.P.y-sh.y)<W*.8){sh.state='windup';sh.t=0;
+   pow('GRR!',sh.x,sh.y-sh.h*.8,'grr');tone(90,.5,'square',.12,70);}
+  bumpCheck(sh);
+ }else if(sh.state==='windup'){const P=OW.P;sh.vx*=Math.pow(.05,dt);sh.vy*=Math.pow(.05,dt);sh.dir=P.x>sh.x?1:-1;spin=Math.sin(sh.t*40)*5;
+  bumpCheck(sh);
+  if(sh.state==='windup'&&sh.t>.75){const dx=P.x-sh.x,dy=P.y-sh.y,d=Math.hypot(dx,dy)||1;sh.vx=dx/d*W*.95;sh.vy=dy/d*W*.95;sh.state='lunge';sh.t=0;sfx.whoosh()}}
+ else if(sh.state==='lunge'){const P=OW.P;if(Math.abs(sh.vx)>15)sh.dir=sh.vx>0?1:-1;
+  const mx=sh.x+sh.dir*sh.w*.42,my=sh.y+sh.h*.08;
+  if(!(P.hurt>0)&&Math.hypot(mx-P.x,my-P.y)<P.w*.38)bite(sh);
+  else if(sh.t>.8){sh.state='hunt';sh.t=0;sh.atk=3+Math.random()*2}}
+ else if(sh.state==='retreat'){const P=OW.P,dx=sh.x-P.x||1;sh.vx+=(Math.sign(dx)*W*.35-sh.vx)*Math.min(1,dt*4);sh.vy*=.95;sh.dir=sh.vx>0?1:-1;
+  if(sh.t>1.1){sh.state='hunt';sh.t=0;sh.atk=3+Math.random()*2}}
+ else if(sh.state==='dizzy'){sh.vx*=Math.pow(.15,dt);sh.vy*=Math.pow(.15,dt);spin=Math.min(1,sh.t/.6)*360;
+  if(sh.t>1.2){sh.state='hunt';sh.t=0}}
  else if(sh.state==='flip'){sh.vx*=Math.pow(.1,dt);sh.vy+=(OW.surf+(OW.H-BAR-OW.surf)*.35-sh.y)*dt;sh.flip=Math.min(1,sh.flip+dt*1.6);
   if(sh.flip>.6&&!sh.powFlip){sh.powFlip=1;pow('FLIP!',sh.x,sh.y-sh.h,'big');sparks(sh.x,sh.y,12,140);shake()}
   if(sh.t>1&&(sh.zt=(sh.zt||0)-dt)<0){sh.zt=.6;pow('z',sh.x+sh.dir*sh.w*.25,sh.y-sh.h*.2,'zz')}
   if(sh.t>.5&&!sh.saidFlip){sh.saidFlip=1;caption(FACTS.flip);say('Flip! '+FACTS.flip)}
   if(sh.t>4.2){sh.state='leave';sh.t=0;sh.dir=sh.x<W/2?-1:1}}
  else if(sh.state==='leave'){sh.flip=Math.max(0,sh.flip-dt*2);sh.vx=lerp(sh.vx,sh.dir*W*.9,Math.min(1,dt*2));sh.vy*=.95;
-  if(sh.x<-sh.w||sh.x>W+sh.w){sh.el.remove();sh.st.remove();sh.alive=false;OW.shark=null;OW.sharkWait=30;
+  if(sh.x<-sh.w||sh.x>W+sh.w){sh.el.remove();sh.st.remove();sh.hpEl.remove();sh.alive=false;OW.shark=null;OW.sharkWait=30;
    sfx.tada();pow('ORCAS WIN!',OW.W/2,OW.H*.45,'big');sparks(OW.W/2,OW.H*.45,16,180);mbubs(OW.W/2,OW.H*.55,20,140);caption('Hooray! The orcas won!');say('Hooray! The orcas won!');
    OW.ents.forEach((e,i)=>setTimeout(()=>{if(!e.act){e.act=makeAct('jump',e);e.act.t=0}},i*400));
    setTimeout(()=>{caption(FACTS.win);say(FACTS.win)},2600);return}}
@@ -920,6 +961,7 @@ function updShark(dt){const sh=OW.shark,W=OW.W;
  sh.y=clamp(sh.y,yMinS,yMaxS);
  const tg=clamp(Math.atan2(sh.vy,Math.max(Math.abs(sh.vx),60))*180/Math.PI,-30,30);sh.a+=(tg-sh.a)*Math.min(1,dt*5);
  sh.el.style.transform=`translate(${sh.x-sh.w/2}px,${sh.y-sh.h/2}px) rotate(${(sh.a*sh.dir)+spin}deg) scaleX(${sh.dir}) scaleY(${1-2*sh.flip})`;
+ sh.hpEl.style.left=sh.x+'px';sh.hpEl.style.top=(sh.y-sh.h*.85)+'px';sh.hpEl.hidden=sh.state==='flip'||sh.state==='leave';
  const dizzy=sh.state==='dizzy'||sh.state==='flip';sh.st.hidden=!dizzy;
  if(dizzy){sh.st.style.left=sh.x+'px';sh.st.style.top=(sh.y-sh.h*(sh.flip>.5?-.1:.75))+'px'}}
 
