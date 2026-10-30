@@ -482,6 +482,36 @@ parasaur:(c,c2)=>`<svg class="art" viewBox="0 0 220 180">
  <path d="M184 71 Q194 75 205 69" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/>
  <circle cx="88" cy="94" r="6" fill="${c2}" opacity=".7"/><circle cx="108" cy="88" r="5" fill="${c2}" opacity=".7"/>
  <circle cx="184" cy="64" r="4" fill="#ff8fa3" opacity=".7"/></svg>`,
+clam:()=>`<svg class="art" viewBox="0 0 200 200">
+ <path d="M12 168 Q100 30 188 168Z" fill="#ffb4a2" stroke="#e8846f" stroke-width="4" stroke-linejoin="round"/>
+ <g stroke="#e8846f" stroke-width="4" stroke-linecap="round">${[-60,-40,-20,0,20,40,60].map(a=>{const r=a*Math.PI/180;return `<path d="M100 166 L${100+Math.sin(r)*78} ${166-Math.cos(r)*100}"/>`}).join('')}</g>
+ <path d="M10 164 H190 Q190 198 100 198 Q10 198 10 164Z" fill="#f6a08e" stroke="#e8846f" stroke-width="4" stroke-linejoin="round"/>
+ <path d="M36 70 Q60 50 80 56" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" opacity=".5"/></svg>`,
+wreck:()=>`<svg class="art" viewBox="0 0 200 200">
+ <path d="M116 112 L132 18" stroke="#6d4229" stroke-width="10" stroke-linecap="round"/><path d="M132 22 L168 40 L128 56Z" fill="#dfe8ec" opacity=".85"/>
+ <path d="M6 198 L22 118 Q100 96 190 104 L196 198Z" fill="#8d5a3b" stroke="#6d4229" stroke-width="4" stroke-linejoin="round"/>
+ <g stroke="#6d4229" stroke-width="3"><path d="M18 140 Q100 122 192 128"/><path d="M14 162 Q100 146 194 152"/><path d="M10 182 Q100 170 196 176"/></g>
+ <circle cx="70" cy="150" r="11" fill="#3a2a1c" stroke="#c9a24a" stroke-width="4"/><circle cx="130" cy="146" r="11" fill="#3a2a1c" stroke="#c9a24a" stroke-width="4"/>
+ <path d="M160 128 L172 150 L156 166" stroke="#3a2a1c" stroke-width="5" fill="none" stroke-linejoin="round"/></svg>`,
+barrel:()=>`<svg class="art" viewBox="0 0 200 200">
+ <path d="M48 196 Q30 140 48 70 H152 Q170 140 152 196Z" fill="#b5713f" stroke="#7d4a26" stroke-width="4" stroke-linejoin="round"/>
+ <g stroke="#7d4a26" stroke-width="3"><path d="M76 72 Q68 134 76 196"/><path d="M100 70 V196"/><path d="M124 72 Q132 134 124 196"/></g>
+ <path d="M44 96 Q100 106 156 96" stroke="#5b5f6e" stroke-width="10" fill="none"/><path d="M44 172 Q100 182 156 172" stroke="#5b5f6e" stroke-width="10" fill="none"/>
+ <ellipse cx="100" cy="70" rx="52" ry="12" fill="#c98752" stroke="#7d4a26" stroke-width="4"/>
+ <circle cx="70" cy="130" r="5" fill="#3fae6a"/><circle cx="132" cy="150" r="7" fill="#3fae6a"/></svg>`,
+anemone:()=>`<svg class="art" viewBox="0 0 200 200">
+ <g stroke-linecap="round" fill="none">${[-70,-52,-34,-17,0,17,34,52,70].map((a,i)=>{const r=a*Math.PI/180,x=100+Math.sin(r)*64,y=150-Math.cos(r)*104;
+  return `<path d="M${100+Math.sin(r)*30} 160 Q${x-14+i%2*28} ${(160+y)/2} ${x} ${y}" stroke="#ff8fc8" stroke-width="15"/><circle cx="${x}" cy="${y}" r="9" fill="#ffd1e8"/>`}).join('')}</g>
+ <path d="M30 198 Q34 150 100 148 Q166 150 170 198Z" fill="#e85d9a"/>
+ <circle cx="70" cy="178" r="6" fill="#ff9ccb"/><circle cx="128" cy="172" r="5" fill="#ff9ccb"/></svg>`,
+sponge:()=>`<svg class="art" viewBox="0 0 200 200">
+ ${[[30,92,40,'#ffb703'],[78,40,46,'#fb8500'],[132,86,40,'#ffc93c']].map(([x,y,w,c])=>`<rect x="${x}" y="${y}" width="${w}" height="${198-y}" rx="${w/2}" fill="${c}"/>
+  <ellipse cx="${x+w/2}" cy="${y+10}" rx="${w*.34}" ry="7" fill="#9a4f00"/>
+  <circle cx="${x+w*.3}" cy="${y+50}" r="3.5" fill="#00000026"/><circle cx="${x+w*.68}" cy="${y+80}" r="3.5" fill="#00000026"/><circle cx="${x+w*.4}" cy="${y+110}" r="3.5" fill="#00000026"/>`).join('')}</svg>`,
+brain:()=>`<svg class="art" viewBox="0 0 200 200">
+ <path d="M10 198 Q8 96 100 92 Q192 96 190 198Z" fill="#b99ae6" stroke="#9575cd" stroke-width="4"/>
+ <g stroke="#8a66c4" stroke-width="5" fill="none" stroke-linecap="round">
+  <path d="M30 170 Q46 140 66 156 T104 138 T146 152 T176 166"/><path d="M40 130 Q60 112 80 126 T120 112 T160 128"/><path d="M60 104 Q80 94 100 104 T140 102"/><path d="M26 190 Q60 178 100 186 T174 186"/></g></svg>`,
 rock:(c='#8189ad')=>`<svg class="art" viewBox="0 0 200 200">
  <path d="M8 198 Q-2 124 50 98 Q82 60 134 76 Q194 92 196 152 Q200 198 168 198Z" fill="${c}"/>
  <path d="M54 110 Q86 80 128 90" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round" opacity=".35"/>
@@ -655,7 +685,8 @@ function relPt(par,el){const a=par.getBoundingClientRect(),b=el.getBoundingClien
 /* ============ MEMORY (hide & seek pairs) ============ */
 const DINOS={longneck:1,trex:1,trike:1,stego:1,ankylo:1,parasaur:1};
 const SEA_POOL=['orca','shark','gwhite','octopus','crab','starfish','fish'];
-const COVERS=[['rock',()=>ART.rock()],['rock',()=>ART.rock('#8a7fa8')],['weed',()=>ART.seaweed()],['coral',()=>ART.coral()],['chest',()=>ART.chest()]];
+const COVERS=[['rock',()=>ART.rock()],['rock',()=>ART.rock('#8a7fa8')],['weed',()=>ART.seaweed()],['coral',()=>ART.coral()],['chest',()=>ART.chest()],
+ ['clam',()=>ART.clam()],['wreck',()=>ART.wreck()],['barrel',()=>ART.barrel()],['weed',()=>ART.anemone()],['sponge',()=>ART.sponge()],['brain',()=>ART.brain()]];
 const LEVELS=[2,3,4],EMPTIES=[1,2,3];
 let mem={lvl:0,first:null,lock:false,done:0,started:false,n:0};
 function seaArt(t){return t==='fish'?ART.fish('#ffcf3f','#ff7a3d'):ART[t]()}
@@ -670,21 +701,24 @@ function hideInit(){if(!mem.started){mem.started=true;const h=$('hide');
   memRound()}else memLayout()}
 function memRound(){const n=LEVELS[mem.lvl];mem.n=n;mem.first=null;mem.lock=false;mem.done=0;
  const kinds=shuffle(SEA_POOL).slice(0,n),spots=shuffle([...kinds,...kinds,...Array(EMPTIES[mem.lvl]).fill('empty')]);
- $('reef').innerHTML=spots.map(t=>{const [ck,cf]=rnd(COVERS);return `<div class="spot" data-t="${t}"><div class="creature"><div class="bob">${t==='empty'?'':seaArt(t)}</div></div><div class="cover${ck==='weed'?' sway':''}">${cf()}</div></div>`}).join('');
+ let deck=[];const nextCover=()=>{if(!deck.length)deck=shuffle(COVERS);return deck.pop()};
+ $('reef').innerHTML=spots.map(t=>{const [ck,cf]=nextCover();return `<div class="spot" data-t="${t}"><div class="creature"><div class="bob">${t==='empty'?'':seaArt(t)}</div></div><div class="cover${ck==='weed'?' sway':''}">${cf()}</div></div>`}).join('');
  $('reef').querySelectorAll('.spot').forEach((sp,i)=>{sp.addEventListener('pointerdown',()=>tapSpot(sp));const sw=sp.querySelector('.sway svg');if(sw)sw.style.animationDelay=(-i*.7)+'s'});
  memLayout();$('lvl').innerHTML=LEVELS.map((_,i)=>`<i class="${i<=mem.lvl?'on':''}"></i>`).join('')}
 function memLayout(){const sp=[...$('reef').querySelectorAll('.spot')];if(!sp.length)return;const W=$('hide').clientWidth,H=$('hide').clientHeight,k=sp.length;
- const y0=H*.38+H*.1,y1=H-12;let base=Math.min(W*.4,H*.25)*(k<=5?1:k<=8?.86:.76),placed=null;
- for(let round=0;round<30&&!placed;round++,base*=.93){const P=[];let ok=true;
-  for(let i=0;i<k&&ok;i++){let got=null;
-   for(let t=0;t<250&&!got;t++){const y=y0+Math.random()*(y1-y0),kd=(y-y0)/(y1-y0),s=base*(.58+.52*kd),x=16+s/2+Math.random()*Math.max(1,W-32-s);
-    if(y-s*1.35<70&&x-s/2<90)continue;
-    if(P.every(q=>Math.abs(x-q.x)>(s+q.s)/2*.86||Math.abs(y-q.y)>Math.min(s,q.s)*.5))got={x,y,s,kd}}
-   if(got)P.push(got);else ok=false}
-  if(ok)placed=P}
- if(!placed)return;
- sp.forEach((el,i)=>{const q=placed[i];el.style.width=el.style.height=q.s+'px';el.style.left=(q.x-q.s/2)+'px';el.style.top=(q.y-q.s)+'px';
-  el.style.zIndex=Math.round(q.y);el.style.setProperty('--k',q.kd.toFixed(2))})}
+ const land=W>H,R=land?2:(k<=5?2:3);const counts=[];let left=k;for(let r=0;r<R;r++){const c=Math.ceil(left/(R-r));counts.push(c);left-=c}
+ counts.reverse();if(!land&&R===3&&counts[0]<counts[2])counts.reverse();/* far rows hold more */
+ const floorTop=H*.38+H*.07,floorBot=H-14,gap=10,depth=r=>R===1?1:r/(R-1);
+ let base=Math.min(W*.42,H*.3),sz;
+ for(let it=0;it<40;it++,base*=.95){sz=counts.map((c,r)=>base*(.6+.4*depth(r)));
+  const hTot=sz.reduce((a,b)=>a+b,0)+gap*(R-1),wOk=counts.every((c,r)=>c*sz[r]*1.18<=W-24);if(wOk&&hTot<=floorBot-floorTop)break}
+ const ys=[];let y=floorBot;for(let r=R-1;r>=0;r--){ys[r]=y;y-=sz[r]+gap}
+ const slack=(ys[0]-sz[0])-floorTop;if(slack>0)for(let r=0;r<R;r++)ys[r]-=slack*(1-depth(r))*.5;
+ let idx=0;const order=shuffle(sp.map((_,i)=>i));
+ counts.forEach((c,r)=>{const cw=(W-24)/c,stag=(r%2?.5:0)*0+((r%2)?cw*.18:-cw*.18);
+  for(let i=0;i<c;i++){const el=sp[order[idx++]],s=sz[r],free=Math.max(0,cw-s*1.1),off=Math.max(-free/2,Math.min(free/2,(Math.random()-.5)*free*.8+stag)),x=12+cw*i+cw/2+off;
+   const cx=Math.min(W-12-s/2,Math.max(12+s/2,x));const yy=ys[r]-(Math.random()*.06*s);
+   el.style.width=el.style.height=s+'px';el.style.left=(cx-s/2)+'px';el.style.top=(yy-s)+'px';el.style.zIndex=10+r;el.style.setProperty('--k',depth(r).toFixed(2))}})}
 addEventListener('resize',()=>{if(current==='hide')memLayout()});
 function puff(sp){const par=$('hide'),[x,y]=relPt(par,sp);for(let i=0;i<8;i++){const el=fxIn(par,'mbub',x,y,1100),s=6+Math.random()*12;el.style.zIndex=999;
  el.style.width=el.style.height=s+'px';el.style.setProperty('--dx',(Math.random()*2-1)*50+'px');el.style.setProperty('--dy',-(30+Math.random()*80)+'px')}}
