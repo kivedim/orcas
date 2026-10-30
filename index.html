@@ -706,19 +706,24 @@ function memRound(){const n=LEVELS[mem.lvl];mem.n=n;mem.first=null;mem.lock=fals
  $('reef').querySelectorAll('.spot').forEach((sp,i)=>{sp.addEventListener('pointerdown',()=>tapSpot(sp));const sw=sp.querySelector('.sway svg');if(sw)sw.style.animationDelay=(-i*.7)+'s'});
  memLayout();$('lvl').innerHTML=LEVELS.map((_,i)=>`<i class="${i<=mem.lvl?'on':''}"></i>`).join('')}
 function memLayout(){const sp=[...$('reef').querySelectorAll('.spot')];if(!sp.length)return;const W=$('hide').clientWidth,H=$('hide').clientHeight,k=sp.length;
- const land=W>H,R=land?2:(k<=5?2:3);const counts=[];let left=k;for(let r=0;r<R;r++){const c=Math.ceil(left/(R-r));counts.push(c);left-=c}
- counts.reverse();if(!land&&R===3&&counts[0]<counts[2])counts.reverse();/* far rows hold more */
- const floorTop=H*.38+H*.07,floorBot=H-14,gap=10,depth=r=>R===1?1:r/(R-1);
- let base=Math.min(W*.42,H*.3),sz;
- for(let it=0;it<40;it++,base*=.95){sz=counts.map((c,r)=>base*(.6+.4*depth(r)));
-  const hTot=sz.reduce((a,b)=>a+b,0)+gap*(R-1),wOk=counts.every((c,r)=>c*sz[r]*1.18<=W-24);if(wOk&&hTot<=floorBot-floorTop)break}
- const ys=[];let y=floorBot;for(let r=R-1;r>=0;r--){ys[r]=y;y-=sz[r]+gap}
- const slack=(ys[0]-sz[0])-floorTop;if(slack>0)for(let r=0;r<R;r++)ys[r]-=slack*(1-depth(r))*.5;
- let idx=0;const order=shuffle(sp.map((_,i)=>i));
- counts.forEach((c,r)=>{const cw=(W-24)/c,stag=(r%2?.5:0)*0+((r%2)?cw*.18:-cw*.18);
-  for(let i=0;i<c;i++){const el=sp[order[idx++]],s=sz[r],free=Math.max(0,cw-s*1.1),off=Math.max(-free/2,Math.min(free/2,(Math.random()-.5)*free*.8+stag)),x=12+cw*i+cw/2+off;
-   const cx=Math.min(W-12-s/2,Math.max(12+s/2,x));const yy=ys[r]-(Math.random()*.06*s);
-   el.style.width=el.style.height=s+'px';el.style.left=(cx-s/2)+'px';el.style.top=(yy-s)+'px';el.style.zIndex=10+r;el.style.setProperty('--k',depth(r).toFixed(2))}})}
+ const fTop=H*.38+H*.05,fBot=H-12;
+ const ovl=(a,b)=>{const ix=Math.min(a.x+a.s/2,b.x+b.s/2)-Math.max(a.x-a.s/2,b.x-b.s/2),iy=Math.min(a.y,b.y)-Math.max(a.y-a.s,b.y-b.s);
+  return ix>0&&iy>0?ix*iy/Math.min(a.s*a.s,b.s*b.s):0};
+ let base=Math.min(W*.4,H*.27)*Math.sqrt(5/k)*1.08,best=null;
+ for(let round=0;round<70;round++){if(round%10===9)base*=.94;
+  const P=[];
+  for(let i=0;i<k;i++){let cand=null,score=-1;
+   for(let t=0;t<34;t++){const kd=Math.pow(Math.random(),.8),s=base*(.58+.48*kd),y=fTop+s+kd*(fBot-fTop-s),x=12+s/2+Math.random()*Math.max(1,W-24-s);
+    if(y-s*1.3<72&&x-s/2<84)continue;
+    let m=1e9;for(const q of P){const d=Math.hypot((x-q.x)/((s+q.s)/2),(y-q.y)*1.7/((s+q.s)/2));if(d<m)m=d}
+    const edge=Math.min(x-s/2-12,W-12-x-s/2)/s;const sc=(P.length?m:1)+Math.min(0,edge)*2;if(sc>score){score=sc;cand={x,y,s,kd:(y-fTop-s*.6)/(fBot-fTop)}}}
+   if(cand)P.push(cand)}
+  if(P.length<k)continue;
+  let worst=0;for(let i=0;i<k;i++)for(let j=i+1;j<k;j++)worst=Math.max(worst,ovl(P[i],P[j]));
+  if(!best||worst<best.w)best={P,w:worst};if(worst<=.1)break}
+ if(!best)return;const P=best.P.sort((a,b)=>a.y-b.y);const order=shuffle(sp.map((_,i)=>i));
+ P.forEach((q,i)=>{const el=sp[order[i]];el.style.width=el.style.height=q.s+'px';el.style.left=(q.x-q.s/2)+'px';el.style.top=(q.y-q.s)+'px';
+  el.style.zIndex=10+i;el.style.setProperty('--k',Math.max(0,Math.min(1,q.kd)).toFixed(2))})}
 addEventListener('resize',()=>{if(current==='hide')memLayout()});
 function puff(sp){const par=$('hide'),[x,y]=relPt(par,sp);for(let i=0;i<8;i++){const el=fxIn(par,'mbub',x,y,1100),s=6+Math.random()*12;el.style.zIndex=999;
  el.style.width=el.style.height=s+'px';el.style.setProperty('--dx',(Math.random()*2-1)*50+'px');el.style.setProperty('--dy',-(30+Math.random()*80)+'px')}}
