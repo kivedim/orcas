@@ -85,23 +85,21 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .shelf > div{width:min(14vw,9vh);animation:popin .5s both}
 
-/* ---------- Memory ---------- */
-#hide{background:linear-gradient(#7fdcf5,#2a9fd0 50%,#0e5a8c)}
+/* ---------- Memory (hide & seek pairs) ---------- */
+#hide{background:linear-gradient(#7fdcf5,#2a9fd0 45%,#0e5a8c)}
 .ray{pointer-events:none;position:absolute;top:-10%;width:18%;height:70%;background:linear-gradient(#ffffff40,transparent);transform:rotate(18deg);transform-origin:top}
 .bubble{pointer-events:none;position:absolute;bottom:-5%;border-radius:50%;border:2px solid #ffffffaa;background:#ffffff22;animation:rise linear infinite}
-.board{position:absolute;left:50%;top:calc(50% + 28px);transform:translate(-50%,-50%);display:grid;gap:var(--g,12px)}
-.card{width:var(--s,120px);height:var(--s,120px);perspective:900px;touch-action:none;cursor:pointer}
-.card .in{position:relative;width:100%;height:100%;transition:transform .45s cubic-bezier(.3,1.3,.5,1);transform-style:preserve-3d}
-.card.up .in{transform:rotateY(180deg)}
-.card .f{position:absolute;inset:0;border-radius:20%;-webkit-backface-visibility:hidden;backface-visibility:hidden;display:grid;place-items:center;
-  border:4px solid #fff;box-shadow:0 5px 0 #0003;overflow:hidden}
-.card .back{background:#ffcf3f}
-.card .back svg{width:100%;height:100%}
-.card .front{background:#fff;transform:rotateY(180deg)}
-.card .front > svg{width:86%}
-.card.matched .front{background:#fff3b8;border-color:#ffcf3f}
-.card.matched .front > svg{animation:wiggle .6s 2}
-.lvl{position:absolute;top:30px;right:max(18px,env(safe-area-inset-right,0px));display:flex;gap:8px}
+.ledge{position:absolute;left:-6%;right:-6%;height:28px;border-radius:999px;background:var(--sand);box-shadow:inset 0 7px 0 #f8dea6,0 6px 0 #00000022;pointer-events:none}
+.spot{position:absolute;touch-action:none;cursor:pointer}
+.spot .cover{position:absolute;inset:0;z-index:2;transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
+.spot .creature{position:absolute;left:8%;width:84%;bottom:22%;z-index:1;opacity:0;transform:translateY(20%) scale(.3);
+  transition:transform .5s cubic-bezier(.3,1.6,.5,1),opacity .18s;pointer-events:none}
+.spot.open .creature{opacity:1;transform:translateY(-56%) scale(1)}
+.spot.open .cover{transform:translateX(22%) rotate(9deg)}
+.spot.matched .cover{transform:translateX(26%) rotate(12deg) scale(.92)}
+.spot.matched .creature .bob{animation:bob 1.6s ease-in-out infinite}
+.creature.wiggle .bob{animation:wiggle .5s !important}
+.lvl{position:absolute;top:30px;right:max(18px,env(safe-area-inset-right,0px));display:flex;gap:8px;z-index:30}
 .lvl i{width:16px;height:16px;border-radius:50%;background:#ffffff55;border:2px solid #fff}
 .lvl i.on{background:var(--sun)}
 
@@ -209,7 +207,7 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 @keyframes leave{to{transform:translate(-160vw,-50%)}}
 @keyframes floatup{0%{transform:scale(.4);opacity:1}100%{transform:translateY(-30vh) scale(1.3);opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation-iteration-count:1 !important;transition-duration:.01s !important}
- .world.hero .disc,.again,.o-waves,#oLayer.shake,#egg.shk,.tear,.stars,.spot.open .creature .bob{animation:none !important}}
+ .world.hero .disc,.again,.o-waves,#oLayer.shake,#egg.shk,.tear,.stars,.spot.matched .creature .bob{animation:none !important}}
 </style>
 </head>
 <body>
@@ -247,7 +245,7 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
   <section class="screen" id="hide" hidden>
     <div class="ray" style="left:8%"></div><div class="ray" style="left:46%;width:12%"></div><div class="ray" style="left:74%"></div>
     <div class="lvl" id="lvl"></div>
-    <div class="board" id="board"></div>
+    <div id="reef"></div>
   </section>
 
   <!-- FEED -->
@@ -642,41 +640,44 @@ function sparksIn(par,x,y,n,r=90){for(let i=0;i<n;i++){const a=Math.random()*Mat
  el.style.setProperty('--dx',Math.cos(a)*d+'px');el.style.setProperty('--dy',Math.sin(a)*d+'px')}}
 function relPt(par,el){const a=par.getBoundingClientRect(),b=el.getBoundingClientRect();return[b.left-a.left+b.width/2,b.top-a.top+b.height/2]}
 
-/* ============ MEMORY ============ */
-const MEM_POOL=['orca','shark','gwhite','octopus','crab','starfish','longneck','trex','trike','stego','ankylo','parasaur'];
+/* ============ MEMORY (hide & seek pairs) ============ */
 const DINOS={longneck:1,trex:1,trike:1,stego:1,ankylo:1,parasaur:1};
-const LEVELS=[2,3,4,6];
-const MEMBACK=`<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#ffcf3f"/>
- <path d="M0 62 Q12 52 25 62 T50 62 T75 62 T100 62 V100 H0Z" fill="#2aa5d4"/><path d="M0 76 Q12 68 25 76 T50 76 T75 76 T100 76 V100 H0Z" fill="#0f5d8f"/>
- <path d="M40 60 Q46 32 62 28 Q56 44 60 60Z" fill="#1d2433"/><circle cx="24" cy="30" r="6" fill="#fff" opacity=".8"/><circle cx="76" cy="20" r="4" fill="#fff" opacity=".8"/></svg>`;
-let mem={lvl:0,up:[],lock:false,done:0,started:false,n:0};
-function memArt(t,col){return DINOS[t]?ART[t](...col):t==='fish'?ART.fish():ART[t]()}
-function hideInit(){if(!mem.started){mem.started=true;for(let i=0;i<8;i++){const b=document.createElement('div');b.className='bubble';const s=8+Math.random()*22;
+const SEA_POOL=['orca','shark','gwhite','octopus','crab','starfish','fish'];
+const COVERS=[()=>ART.rock(),()=>ART.rock('#8a7fa8'),()=>ART.seaweed(),()=>ART.coral(),()=>ART.chest()];
+const LEVELS=[2,3,4];
+let mem={lvl:0,first:null,lock:false,done:0,started:false,n:0};
+function seaArt(t){return t==='fish'?ART.fish('#ffcf3f','#ff7a3d'):ART[t]()}
+function hideInit(){if(!mem.started){mem.started=true;for(let i=0;i<9;i++){const b=document.createElement('div');b.className='bubble';const s=8+Math.random()*22;
   b.style.width=b.style.height=s+'px';b.style.left=Math.random()*100+'%';b.style.animationDuration=(7+Math.random()*6)+'s';b.style.animationDelay=(-Math.random()*10)+'s';$('hide').prepend(b)}
   memRound()}else memLayout()}
-function memRound(){const n=LEVELS[mem.lvl];mem.n=n;const picks=shuffle(MEM_POOL).slice(0,n),colOf={};picks.forEach(t=>colOf[t]=rnd(DINO_COLORS));
- const cards=shuffle([...picks,...picks]);
- $('board').innerHTML=cards.map(t=>`<div class="card" data-t="${t}"><div class="in"><div class="f back">${MEMBACK}</div><div class="f front">${memArt(t,colOf[t])}</div></div></div>`).join('');
- mem.up=[];mem.lock=false;mem.done=0;memLayout();
- $('board').querySelectorAll('.card').forEach((c,i)=>{c.style.animation=`popin .4s ${i*.05}s cubic-bezier(.3,1.6,.5,1) both`;c.addEventListener('pointerdown',()=>tapCard(c))});
+function memRound(){const n=LEVELS[mem.lvl];mem.n=n;mem.first=null;mem.lock=false;mem.done=0;
+ const kinds=shuffle(SEA_POOL).slice(0,n),spots=shuffle([...kinds,...kinds]);
+ $('reef').innerHTML=spots.map(t=>`<div class="spot" data-t="${t}"><div class="creature"><div class="bob">${seaArt(t)}</div></div><div class="cover">${rnd(COVERS)()}</div></div>`).join('');
+ $('reef').querySelectorAll('.spot').forEach(sp=>sp.addEventListener('pointerdown',()=>tapSpot(sp)));memLayout();
  $('lvl').innerHTML=LEVELS.map((_,i)=>`<i class="${i<=mem.lvl?'on':''}"></i>`).join('')}
-function memLayout(){const k=$('board').children.length;if(!k)return;const r=$('hide').getBoundingClientRect(),land=r.width>r.height;
- let [c,rw]={4:[2,2],6:[2,3],8:[2,4],12:[3,4]}[k];if(land)[c,rw]=[rw,c];
- const g=Math.max(10,Math.min(18,r.width*.03)),aw=r.width-32,ah=r.height-140;
- const s=Math.floor(Math.min((aw-g*(c-1))/c,(ah-g*(rw-1))/rw,210));
- const b=$('board');b.style.setProperty('--s',s+'px');b.style.setProperty('--g',g+'px');b.style.gridTemplateColumns=`repeat(${c},${s}px)`}
+function memLayout(){const sp=[...$('reef').querySelectorAll('.spot')];if(!sp.length)return;const W=$('hide').clientWidth,H=$('hide').clientHeight,k=sp.length;
+ const land=W>H;let cols=land?Math.min(4,k/2):2,rows=Math.ceil(k/cols);if(land&&k===4){cols=4;rows=1}
+ const top=92,rowH=(H-top-16)/rows,colW=(W-24)/cols,s=Math.floor(Math.min(rowH*.62,colW*.82,200));
+ $('reef').querySelectorAll('.ledge').forEach(l=>l.remove());
+ for(let r=0;r<rows;r++){const ly=top+rowH*(r+1)-30;const l=document.createElement('div');l.className='ledge';l.style.top=ly+'px';l.style.zIndex=r*2;$('reef').prepend(l);
+  for(let c=0;c<cols;c++){const i=r*cols+c;if(i>=k)break;const el=sp[i],jit=(((i*37)%7)/7-.5)*colW*.14;
+   el.style.width=el.style.height=s+'px';el.style.left=(12+colW*c+colW/2-s/2+jit)+'px';el.style.top=(ly-s*.86)+'px';el.style.zIndex=r*2+1}}}
 addEventListener('resize',()=>{if(current==='hide')memLayout()});
-function tapCard(c){if(mem.lock||c.classList.contains('up'))return;c.classList.add('up');sfx.pop();say(NAMES[c.dataset.t]);mem.up.push(c);
- if(mem.up.length<2)return;mem.lock=true;const [a,b]=mem.up;mem.up=[];
- if(a.dataset.t===b.dataset.t){setTimeout(()=>{a.classList.add('matched');b.classList.add('matched');
+function tapSpot(sp){const t=sp.dataset.t,cr=sp.querySelector('.creature');
+ if(sp.classList.contains('matched')){restart(cr,'wiggle');sfx.bubble();say(NAMES[t]);return}
+ if(mem.lock||sp.classList.contains('open'))return;
+ sp.classList.add('open');sfx.bubble();setTimeout(sfx.pop,160);say(NAMES[t]);
+ if(!mem.first){mem.first=sp;return}
+ const a=mem.first;mem.first=null;mem.lock=true;
+ if(a.dataset.t===t){setTimeout(()=>{a.classList.add('matched');sp.classList.add('matched');
    [[517,.12],[659,.12],[784,.2]].forEach(([f,d],i)=>setTimeout(()=>tone(f,d,'triangle',.2),i*90));
-   const par=$('hide'),pa=relPt(par,a),pb=relPt(par,b);sparksIn(par,...pa,7,80);sparksIn(par,...pb,7,80);
-   powIn(par,'MATCH!',(pa[0]+pb[0])/2,(pa[1]+pb[1])/2-20);setTimeout(()=>say('Match! '+NAMES[a.dataset.t]+'!'),300);
-   mem.done++;mem.lock=false;if(mem.done===mem.n)setTimeout(memWin,900)},450)}
- else setTimeout(()=>{a.classList.remove('up');b.classList.remove('up');sfx.boop();mem.lock=false},1150)}
+   const par=$('hide'),pa=relPt(par,a.querySelector('.creature')),pb=relPt(par,cr);sparksIn(par,...pa,7,80);sparksIn(par,...pb,7,80);
+   powIn(par,'MATCH!',(pa[0]+pb[0])/2,Math.min(pa[1],pb[1])-30);setTimeout(()=>say('Two '+(t==='fish'?'fish':NAMES[t].toLowerCase()+(t==='octopus'?'es':'s'))+'!'),350);
+   mem.done++;mem.lock=false;if(mem.done===mem.n)setTimeout(memWin,1000)},500)}
+ else setTimeout(()=>{a.classList.remove('open');sp.classList.remove('open');sfx.boop();mem.lock=false},1300)}
 function memWin(){const par=$('hide'),w=par.clientWidth,h=par.clientHeight;sfx.tada();powIn(par,'WELL DONE!',w/2,h/2,'big');sparksIn(par,w/2,h/2,18,180);
  say('Well done! You found them all!');mem.lvl=Math.min(mem.lvl+1,LEVELS.length-1);
- setTimeout(()=>{$('board').querySelectorAll('.card').forEach(c=>c.classList.remove('up'))},2000);setTimeout(memRound,2600)}
+ setTimeout(()=>{$('reef').querySelectorAll('.spot').forEach(s=>s.classList.remove('open','matched'))},2200);setTimeout(memRound,2800)}
 
 /* ============ FEED WORLD ============ */
 const FOOD_ART={fish:()=>ART.fish(rnd(['#ff8a3d','#ffcf3f','#5ad1e6','#ff6b8b']),'#fff3c4'),meat:()=>ART.meat(),leaf:()=>ART.leaf(rnd(['#4fb35a','#78c850'])),fern:()=>ART.fern()};
