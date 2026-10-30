@@ -299,6 +299,12 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 .tear{transform-box:fill-box;animation:tear 1s ease-in infinite}
 .tear.t2{animation-delay:.5s}
 @keyframes tear{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(34px);opacity:0}}
+.dust{position:absolute;z-index:14;width:22px;height:22px;margin:-11px;border-radius:50%;background:#d8c7a4;opacity:.85;pointer-events:none;animation:dust .85s ease-out forwards}
+@keyframes dust{to{transform:translate(var(--dx),var(--dy)) scale(2.3);opacity:0}}
+.dz{position:absolute;z-index:15;width:20px;height:20px;margin:-10px;pointer-events:none;animation:dz 1s linear 1.5 forwards}
+.dz svg{display:block;width:100%}
+@keyframes dz{0%{transform:rotate(0) translateX(26px) rotate(0) scale(.6)}100%{transform:rotate(360deg) translateX(26px) rotate(-360deg) scale(1)}}
+.pow.small{font-size:clamp(20px,5.6vmin,34px)}
 @keyframes wob{0%,100%{transform:rotate(0)}25%{transform:rotate(-9deg)}50%{transform:rotate(8deg)}75%{transform:rotate(-4deg)}}
 @keyframes popin{0%{transform:scale(0)}100%{transform:scale(1)}}
 @keyframes jump{0%,100%{transform:translateY(0)}40%{transform:translateY(-18%) scaleY(1.04)}70%{transform:translateY(0) scaleY(.94)}}
@@ -861,7 +867,7 @@ const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 
 /* ============ SOUND ============ */
-const APP_VERSION='2.1';
+const APP_VERSION='2.2';
 const STORE={get(k,d){try{const v=localStorage.getItem('dh-'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('dh-'+k,JSON.stringify(v))}catch(e){}}};
 const SET=Object.assign({sfx:true,music:true,voice:true,rate:.9,orcaName:'Killer whale',level:'auto',lock:'tap'},STORE.get('settings',{}));
 if(typeof SET.lock!=='string')SET.lock='tap';
@@ -1028,25 +1034,53 @@ function tapDino(){if(egg.busy)return;const b=dinoBox(),m=egg.mood,hx=b.cx-20,hy
  else if(m===''){setMood('glad');hug();hop();sfx.giggle();hearts(hx,hy,7);say(rnd(['Yay! All better!','Hee hee! I feel happy!','Thank you for the hugs!']))}
  else{hop();sfx.giggle();hearts(hx,hy,5);if(Math.random()<.55)say(rnd(['Hee hee!','Yay!','I love you!','That tickles!']))}}
 function fling(dir){if(egg.busy)return;egg.busy=true;setMood('');const d=$('dino'),b=dinoBox(),par=$('egg'),W=par.clientWidth;
- d.getAnimations().filter(a=>!(a instanceof CSSAnimation)).forEach(a=>a.cancel());d.style.transformOrigin='50% 55%';
- let kf,dur,at,ix,iy,txt;
- if(dir==='up'){const H=b.bottom+60;dur=1900;at=.82;ix=b.x;iy=b.bottom-10;txt=rnd(['BONK!','THUD!']);sfx.whoosh();
-  kf=[{transform:'none',offset:0},{transform:'translateY(6%) scale(1.08,.84)',offset:.1},{transform:`translateY(-${H}px) rotate(200deg)`,offset:.42,easing:'ease-in'},
-   {transform:`translateY(-${H}px) rotate(360deg)`,offset:.55,easing:'ease-in'},{transform:'translateY(0) rotate(720deg)',offset:.82},
-   {transform:'translateY(4%) scale(1.25,.7) rotate(720deg)',offset:.87},{transform:'translateY(-6%) scale(.95,1.05) rotate(720deg)',offset:.94},{transform:'rotate(720deg)',offset:1}]}
- else if(dir==='right'){const D=W-b.right+b.w*.14;dur=2100;at=.38;ix=W-24;iy=b.y;txt=rnd(['CRASH!','SMACK!']);noise(.4,.25,'bandpass',600);
-  kf=[{transform:'none',offset:0},{transform:'translateX(-6%) rotate(-8deg)',offset:.12},{transform:`translateX(${D}px) rotate(6deg)`,offset:.38,easing:'ease-in'},
-   {transform:`translateX(${D}px) scale(.68,1.12)`,offset:.44},{transform:`translate(${D*.55}px,-18%) rotate(-200deg)`,offset:.64},
-   {transform:`translateX(${D*.2}px) rotate(-340deg)`,offset:.82},{transform:'scale(1.1,.85) rotate(-360deg)',offset:.9},{transform:'rotate(-360deg)',offset:1}]}
- else{const D=b.left+b.w*.14;dur=2300;at=.45;ix=Math.max(40,b.left-D*.3+b.w*.3);iy=b.bottom-10;txt=rnd(['BOINK!','OOF!']);sfx.boing();
-  kf=[{transform:'none',offset:0},{transform:'translateX(4%) rotate(8deg)',offset:.1},{transform:`translate(-${D*.5}px,-32%) rotate(-120deg)`,offset:.3,easing:'ease-out'},
-   {transform:`translate(-${D*.8}px,12%) rotate(-180deg)`,offset:.45,easing:'ease-in'},{transform:`translate(-${D*.8}px,14%) rotate(-180deg) scale(1.15,.8)`,offset:.5},
-   {transform:`translate(-${D*.8}px,12%) rotate(-168deg)`,offset:.57},{transform:`translate(-${D*.8}px,12%) rotate(-192deg)`,offset:.64},{transform:`translate(-${D*.8}px,12%) rotate(-180deg)`,offset:.7},
-   {transform:`translate(-${D*.4}px,-22%) rotate(-280deg)`,offset:.85},{transform:'rotate(-360deg)',offset:1}]}
- d.animate(kf,{duration:dur});
- setTimeout(()=>{sfx.bonk();powIn(par,txt,ix,iy-50);sparksIn(par,ix,iy,9,100);fxIn(par,'boom',ix,iy,600).innerHTML=BOOM;restart(par,'shk')},dur*at);
+ d.getAnimations().filter(a=>!(a instanceof CSSAnimation)).forEach(a=>a.cancel());d.style.transformOrigin='50% 100%';
+ /* keep the animal on screen: how far (as % of its own width) it may move each way */
+ const roomR=Math.max(0,Math.min(.22,(W-b.right-6)/b.w)),roomL=Math.max(0,Math.min(.16,(b.left-6)/b.w));
+ let kf,dur,at,ix,iy,txt,dustDir=0,pre=()=>{};
+ if(dir==='up'){dur=1700;at=.6;ix=b.x;iy=b.bottom-6;txt=rnd(['THUD!','OOF!']);
+  pre=()=>{tone(220,.25,'sine',.12,520)};
+  kf=[{transform:'none',offset:0},
+   {transform:'translateY(4%) scale(1.06,.86)',offset:.12,easing:'ease-out'},          /* crouch */
+   {transform:'translateY(-10%) scale(.95,1.08)',offset:.22,easing:'ease-out'},       /* push off */
+   {transform:'translateY(-48%) rotate(-5deg) scale(.98,1.03)',offset:.4,easing:'ease-in'}, /* top of the jump */
+   {transform:'translateY(0) rotate(-3deg) scale(.97,1.05)',offset:.58,easing:'ease-out'},  /* coming down */
+   {transform:'translateY(3%) scale(1.2,.74)',offset:.62},                             /* legs buckle */
+   {transform:'translateY(6%) rotate(7deg) scale(1.1,.8)',offset:.72},                 /* slumps on its belly */
+   {transform:'translateY(5%) rotate(6deg) scale(1.08,.82)',offset:.88},
+   {transform:'none',offset:1}]}
+ else if(dir==='right'){const R=Math.round(roomR*100);dur=1900;at=.46;ix=b.x+b.w*(.28+roomR);iy=b.bottom-8;txt=rnd(['OOF!','OOPS!']);dustDir=1;
+  pre=()=>{[0,140,280,420].forEach(t=>setTimeout(()=>tone(140,.06,'triangle',.16,90),t))};
+  kf=[{transform:'none',offset:0},
+   {transform:'translateX(-3%) rotate(-3deg)',offset:.1},                                /* gets ready */
+   {transform:`translateX(${R*.5}%) translateY(-3%) rotate(3deg)`,offset:.22},           /* running steps */
+   {transform:`translateX(${R*.75}%) rotate(-1deg)`,offset:.3},
+   {transform:`translateX(${R*.9}%) translateY(-2%) rotate(10deg)`,offset:.38},          /* trips */
+   {transform:`translateX(${R}%) translateY(3%) rotate(24deg) scale(1.05,.9)`,offset:.46,easing:'ease-in'}, /* belly-flop forward */
+   {transform:`translateX(${R}%) translateY(2%) rotate(20deg)`,offset:.54},
+   {transform:`translateX(${R}%) translateY(3%) rotate(22deg) scale(1.03,.92)`,offset:.64},
+   {transform:`translateX(${R*.6}%) rotate(8deg)`,offset:.82},                          /* gets back up */
+   {transform:'none',offset:1}]}
+ else{const L=Math.round(roomL*100);dur=1900;at=.4;ix=b.x-b.w*(.18+roomL);iy=b.bottom-6;txt=rnd(['BUMP!','OOF!']);dustDir=-1;
+  pre=()=>{setTimeout(()=>tone(950,.18,'sine',.12,380),150)};
+  kf=[{transform:'none',offset:0},
+   {transform:'translateX(2%) rotate(3deg)',offset:.12},
+   {transform:`translateX(-${L*.6}%) translateY(-5%) rotate(-12deg)`,offset:.26,easing:'ease-in'}, /* feet slip forward */
+   {transform:`translateX(-${L}%) translateY(4%) rotate(-22deg) scale(1.08,.86)`,offset:.4},        /* lands on its bottom */
+   {transform:`translateX(-${L}%) translateY(0) rotate(-18deg)`,offset:.48},                         /* small bounce */
+   {transform:`translateX(-${L}%) translateY(4%) rotate(-20deg) scale(1.04,.9)`,offset:.55},
+   {transform:`translateX(-${L}%) translateY(4%) rotate(-20deg)`,offset:.7},
+   {transform:`translateX(-${L*.5}%) translateY(2%) rotate(-8deg)`,offset:.86},
+   {transform:'none',offset:1}]}
+ pre();d.animate(kf,{duration:dur});
+ setTimeout(()=>{tone(110,.22,'sine',.28,60);noise(.18,.3,'lowpass',500);
+  powIn(par,txt,ix,iy-80,'small');dust(par,ix,iy,dustDir);if(dir==='up')restart(par,'shk');
+  setTimeout(()=>{const hb=dinoBox();dizzy(par,hb.x+(dir==='left'?-hb.w*.1:hb.w*.15),hb.top+hb.h*.12)},250)},dur*at);
  setTimeout(()=>{d.style.transformOrigin='';setMood('cry');sfx.cry();say(rnd(['Ouch! Waaah!','Owie! That hurt!','Oh no! Waaah!']));egg.busy=false;
   if(!egg.hint){egg.hint=true;setTimeout(()=>{if(egg.mood==='cry'){eggCaption('Tap to give it a hug! Three hugs make it happy again.');say('Tap the dino to give it a hug!')}},1700)}},dur)}
+function dust(par,x,y,dir){for(let i=0;i<9;i++){const el=fxIn(par,'dust',x+(Math.random()-.5)*40,y,900),side=dir||(i%2?1:-1);
+ el.style.setProperty('--dx',side*(20+Math.random()*60)+'px');el.style.setProperty('--dy',-(4+Math.random()*26)+'px');el.style.animationDelay=(i*.02)+'s'}}
+function dizzy(par,x,y){for(let i=0;i<3;i++){const el=fxIn(par,'dz',x,y,1500);el.innerHTML=ART.star();el.style.animationDelay=(-i*.33)+'s'}}
 let eggSw=null;
 $('egg').addEventListener('pointerdown',e=>{if(!egg.hatched||e.target.closest('button'))return;eggSw={x:e.clientX,y:e.clientY,onDino:!!e.target.closest('#dino')}});
 addEventListener('pointercancel',()=>eggSw=null);
