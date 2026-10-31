@@ -275,7 +275,7 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 .o-count{position:absolute;top:20px;right:max(16px,env(safe-area-inset-right,0px));z-index:20;display:flex;gap:3px}
 .o-count div{width:34px;opacity:.35;transition:opacity .2s,transform .3s}
 .o-count div.on{opacity:1;transform:scale(1.15)}
-.caption{position:absolute;top:84px;left:50%;transform:translateX(-50%);width:max-content;max-width:min(88%,520px);z-index:20;
+.caption{position:absolute;top:84px;left:50%;transform:translateX(-50%);width:max-content;max-width:min(calc(100% - 150px),520px);z-index:20;
   background:#ffffffeb;color:var(--ink);font-weight:600;font-size:clamp(15px,3.4vmin,20px);line-height:1.3;padding:8px 16px;border-radius:18px;
   text-align:center;opacity:0;transition:opacity .4s;pointer-events:none}
 .caption.show{opacity:1}
@@ -306,6 +306,13 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
 .pow.grr{color:#ff5d5d;font-size:clamp(22px,6vmin,36px)}
 .pow.ouch{color:#ff8fa3}
 @keyframes spin{to{transform:rotate(360deg)}}
+#caption{left:calc(50% + 34px);max-width:min(calc(100% - 172px),520px)}
+.o-pick{position:absolute;left:max(12px,env(safe-area-inset-left,0px));top:82px;z-index:20;display:flex;flex-direction:column;gap:8px}
+.pk{width:52px;height:52px;border-radius:50%;background:#ffffffb3;border:3px solid #ffffff00;box-shadow:0 3px 0 #0002;display:grid;place-items:center;
+  transition:transform .25s cubic-bezier(.3,1.6,.5,1),background .2s;touch-action:none}
+.pk svg{width:88%;height:auto}
+.pk.on{background:#fff;border-color:var(--sun);transform:scale(1.12)}
+.sniff{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border:4px dashed #ffd1dc;border-radius:50%;pointer-events:none;animation:ring 1s ease-out forwards}
 @keyframes ring{from{transform:scale(.3);opacity:1}to{transform:scale(7);opacity:0}}
 @keyframes drop{50%{transform:translate(calc(var(--dx) * .5),var(--dy))}100%{transform:translate(var(--dx),24px);opacity:0}}
 @keyframes puff{to{transform:translate(var(--dx),-110px) scale(2.6);opacity:0}}
@@ -430,12 +437,22 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radi
     <div id="oLayer"></div>
     <div class="o-count" id="oCount"></div>
     <div class="caption" id="caption"></div>
+    <div class="o-pick" id="oPick">
+      <button class="pk" data-sp="orca" aria-label="Play as killer whale"></button>
+      <button class="pk" data-sp="dolphin" aria-label="Play as dolphin"></button>
+      <button class="pk" data-sp="shark" aria-label="Play as great white shark"></button>
+    </div>
     <div class="o-actions">
       <button class="act" data-act="jump" aria-label="Breach"><svg viewBox="0 0 48 48"><path d="M2 40 H46" stroke="#2aa5d4" stroke-width="4" stroke-linecap="round"/><path d="M8 38 Q22 0 40 36" stroke="#1d2433" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="1 8"/><path d="M14 30 Q22 12 34 16 Q40 18 38 24 Q30 22 22 32Z" fill="#1d2433"/><ellipse cx="31" cy="19" rx="3" ry="1.6" fill="#fff"/></svg></button>
       <button class="act" data-act="slap" aria-label="Tail slap"><svg viewBox="0 0 48 48"><path d="M24 36 V24" stroke="#1d2433" stroke-width="6" stroke-linecap="round"/><path d="M24 26 Q12 22 4 8 Q16 12 24 20 Q32 12 44 8 Q36 22 24 26Z" fill="#1d2433"/><path d="M2 40 H46" stroke="#2aa5d4" stroke-width="4" stroke-linecap="round"/><circle cx="8" cy="34" r="2.5" fill="#2aa5d4"/><circle cx="40" cy="33" r="2.5" fill="#2aa5d4"/><circle cx="12" cy="28" r="2" fill="#2aa5d4"/></svg></button>
       <button class="act" data-act="spyhop" aria-label="Spyhop"><svg viewBox="0 0 48 48"><path d="M14 44 Q12 16 24 6 Q36 16 34 44Z" fill="#1d2433"/><ellipse cx="28" cy="20" rx="2.6" ry="5" fill="#fff"/><path d="M20 34 Q24 30 28 34 V44 H20Z" fill="#fff"/><path d="M2 36 H46" stroke="#2aa5d4" stroke-width="4" stroke-linecap="round"/></svg></button>
       <button class="act" data-act="blow" aria-label="Breathe"><svg viewBox="0 0 48 48"><circle cx="24" cy="10" r="6" fill="#9fd8ef"/><circle cx="16" cy="16" r="4.5" fill="#9fd8ef"/><circle cx="32" cy="16" r="4.5" fill="#9fd8ef"/><path d="M24 30 V20" stroke="#9fd8ef" stroke-width="4" stroke-linecap="round"/><path d="M6 40 Q24 26 42 40Z" fill="#1d2433"/><path d="M2 40 H46" stroke="#2aa5d4" stroke-width="4" stroke-linecap="round"/></svg></button>
       <button class="act shark" id="sharkBtn" aria-label="Great white shark"><svg viewBox="0 0 48 48"><path d="M10 38 Q22 30 26 8 Q30 22 40 38Z" fill="#6c8094"/><path d="M2 38 H46" stroke="#2aa5d4" stroke-width="4" stroke-linecap="round"/><path d="M6 44 H42" stroke="#2aa5d4" stroke-width="3" stroke-linecap="round" opacity=".5"/></svg></button>
+      <button class="act" data-act="bite" aria-label="Bite" hidden><svg viewBox="0 0 48 48"><path d="M4 18 Q24 2 44 18 L40 22 Q24 12 8 22Z" fill="#6c8094"/><path d="M4 30 Q24 46 44 30 L40 26 Q24 36 8 26Z" fill="#6c8094"/>
+        <path d="M10 21 L13 26 L16 20 M18 18 L21 24 L24 17 M26 17 L29 24 L32 18 M34 20 L37 26 L40 21" fill="#fff" stroke="#22314d" stroke-width="1.2" stroke-linejoin="round"/>
+        <path d="M12 27 L15 22 L18 28 M22 29 L25 23 L28 29 M32 28 L35 22 L38 27" fill="#fff" stroke="#22314d" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
+      <button class="act" data-act="smell" aria-label="Smell" hidden><svg viewBox="0 0 48 48"><path d="M6 30 Q10 18 22 20 L30 22 Q24 32 12 34Z" fill="#6c8094"/><circle cx="20" cy="25" r="2.2" fill="#22314d"/>
+        <g stroke="#ff8fa3" stroke-width="3.5" fill="none" stroke-linecap="round"><path d="M32 14 Q36 18 32 22 Q28 26 32 30"/><path d="M39 10 Q43 15 39 20 Q35 25 39 30"/></g></svg></button>
       <button class="act" data-act="sonar" aria-label="Echolocation"><svg viewBox="0 0 48 48"><circle cx="10" cy="24" r="5" fill="#1d2433"/><g stroke="#2aa5d4" stroke-width="4" fill="none" stroke-linecap="round"><path d="M20 14 Q26 24 20 34"/><path d="M28 8 Q38 24 28 40"/><path d="M36 4 Q48 24 36 44"/></g></svg></button>
     </div>
   </section>
@@ -942,6 +959,16 @@ iguano:(c,c2)=>`<svg class="art" viewBox="0 0 220 180">
  <path d="M176 74 Q186 78 194 72" stroke="${INK}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
  ${[[84,84],[104,78],[124,84]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5" fill="${c2}" opacity=".7"/>`).join('')}
  <circle cx="164" cy="68" r="4.5" fill="#ff8fa3" opacity=".7"/></svg>`,
+dolphin:()=>`<svg class="art" viewBox="0 0 220 140">
+ <path d="M38 72 L10 44 Q20 70 8 100Z" fill="#5f8fb5"/>
+ <path d="M100 44 Q108 22 100 8 Q128 16 134 42Z" fill="#5f8fb5"/>
+ <path d="M30 72 Q66 38 136 40 Q178 42 194 62 L214 65 Q219 71 213 74 L192 79 Q176 100 132 102 Q66 106 30 72Z" fill="#7aa7cf"/>
+ <path d="M64 86 Q130 106 192 77 Q176 98 132 99 Q94 100 64 86Z" fill="#e8f1f8"/>
+ <path d="M120 92 Q114 116 96 124 Q110 102 106 90Z" fill="#5f8fb5"/>
+ <path d="M150 50 Q166 46 178 54" stroke="#9fc3e3" stroke-width="5" fill="none" stroke-linecap="round"/>
+ ${eye(172,60,4.5)}
+ <path d="M182 75 Q197 79 210 73" stroke="${INK}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+ <circle cx="176" cy="71" r="4.5" fill="#ff8fa3" opacity=".7"/></svg>`,
 rock:(c='#8189ad')=>`<svg class="art" viewBox="0 0 200 200">
  <path d="M8 198 Q-2 124 50 98 Q82 60 134 76 Q194 92 196 152 Q200 198 168 198Z" fill="${c}"/>
  <path d="M54 110 Q86 80 128 90" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round" opacity=".35"/>
@@ -962,13 +989,13 @@ chest:()=>`<svg class="art" viewBox="0 0 200 200">
  <rect x="86" y="104" width="28" height="32" rx="6" fill="#ffd34d"/><circle cx="100" cy="118" r="5" fill="${INK}"/></svg>`,
 };
 const DINO_COLORS=[['#5aa9e6','#c4e5ff'],['#68c25e','#d6f5c9'],['#ff9f43','#ffe0b8'],['#b57cf2','#ecd9ff'],['#f06aa8','#ffd1e6'],['#2fc4b2','#c6f4ee']];
-const NAMES={spino:'Spinosaurus',raptor:'Velociraptor',pachy:'Pachycephalosaurus',diplo:'Diplodocus',iguano:'Iguanodon',bibbi:'Bibbi-Cat',spider:'Giant spider',snake:'Snake',ray:'Stingray',bat:'Bat',eagle:'Eagle',vulture:'Vulture',ptero:'Pterodactyl',hammer:'Hammerhead shark',ankylo:'Ankylosaurus',parasaur:'Parasaurolophus',gwhite:'Great white shark',trike:'Triceratops',stego:'Stegosaurus',orca:'Killer whale',shark:'Shark',longneck:'Brachiosaurus',trex:'T-rex',octopus:'Octopus',crab:'Crab',fish:'Fish',starfish:'Starfish'};
+const NAMES={dolphin:'Dolphin',spino:'Spinosaurus',raptor:'Velociraptor',pachy:'Pachycephalosaurus',diplo:'Diplodocus',iguano:'Iguanodon',bibbi:'Bibbi-Cat',spider:'Giant spider',snake:'Snake',ray:'Stingray',bat:'Bat',eagle:'Eagle',vulture:'Vulture',ptero:'Pterodactyl',hammer:'Hammerhead shark',ankylo:'Ankylosaurus',parasaur:'Parasaurolophus',gwhite:'Great white shark',trike:'Triceratops',stego:'Stegosaurus',orca:'Killer whale',shark:'Shark',longneck:'Brachiosaurus',trex:'T-rex',octopus:'Octopus',crab:'Crab',fish:'Fish',starfish:'Starfish'};
 const $=id=>document.getElementById(id);
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 
 /* ============ SOUND ============ */
-const APP_VERSION='2.4';
+const APP_VERSION='2.5';
 const STORE={get(k,d){try{const v=localStorage.getItem('dh-'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('dh-'+k,JSON.stringify(v))}catch(e){}}};
 const SET=Object.assign({sfx:true,music:true,voice:true,rate:.9,orcaName:'Killer whale',level:'auto',lock:'tap',timer:0},STORE.get('settings',{}));
 if(typeof SET.lock!=='string')SET.lock='tap';
@@ -1401,27 +1428,57 @@ const FACTS={
  flip:'Orcas can flip a shark upside down. Then the shark goes all sleepy!',
  win:'Orcas are so strong that even great white sharks swim away from them!'
 };
-const SHOUT={jump:'Breach!',slap:'Tail slap!',spyhop:'Spyhop!',blow:'Big breath!',sonar:'Click, click, click!'};
+const SHOUT={jump:'Breach!',slap:'Tail slap!',spyhop:'Spyhop!',blow:'Big breath!',sonar:'Click, click, click!',bite:'Chomp!',smell:'Sniff, sniff!'};
+const SP={
+ orca:{art:()=>ART.orca(),asp:140/220,s:[1,1.15,.62],speed:1,pod:true,enemy:true,acts:['jump','slap','spyhop','blow','sonar'],
+  hello:"You are a killer whale!",full:'Hooray! The whole pod is full!'},
+ dolphin:{art:()=>ART.dolphin(),asp:140/220,s:[.82,.95,.52],speed:1.3,pod:true,enemy:true,acts:['jump','slap','spyhop','blow','sonar'],whistle:1.45,
+  hello:"You are a dolphin!",full:'Hooray! The whole pod is full!',
+  facts:{intro:'Dolphins are fast, playful and super smart!',jump:'Dolphins love to jump and spin in the air!',slap:'Dolphins slap their tails to talk to their friends.',
+   spyhop:'Dolphins pop their heads up to look around.',blow:'Dolphins breathe air through a blowhole on top of their head.',
+   sonar:'Dolphins find fish with clicks. That is called echolocation.',call:'Every dolphin has its own whistle, like a name!',
+   pod:'A dolphin family is called a pod. A baby dolphin is called a calf.',hunt:'Dolphins work together to catch fish!',
+   shark:'Uh oh! A great white shark! Bump it, dolphin!',flip:'Dolphins bump sharks with their strong noses. Now the shark is all dizzy!',
+   win:'Dolphins stick together, so the shark swims away!'}},
+ shark:{art:()=>ART.gwhite(),asp:140/240,s:[1.08],speed:1.12,pod:false,enemy:false,acts:['jump','bite','spyhop','smell'],
+  hello:"You are a great white shark!",full:'Hooray! The shark is full!',
+  facts:{intro:'Great white sharks are the biggest hunting fish in the sea!',jump:'Great white sharks can jump all the way out of the water!',
+   bite:'Great white sharks have about three hundred teeth, and they grow new ones!',spyhop:'Sharks sometimes poke their heads up to look around.',
+   smell:'Sharks can smell a tiny bit of food from far, far away!',call:'Sharks do not whistle. They are quiet swimmers.',
+   pod:'Great white sharks like to swim alone.',hunt:'Sharks are fast and sneaky hunters!'}}};
+OW.sp=STORE.get('oSp','orca');if(!SP[OW.sp])OW.sp='orca';
 function caption(txt){const c=$('caption');c.textContent=txt;c.classList.add('show');clearTimeout(OW.capT);OW.capT=setTimeout(()=>c.classList.remove('show'),5200)}
-function fact(key,delay=0){if(!OW.seen[key]||Math.random()<.35){OW.seen[key]=1;setTimeout(()=>{caption(FACTS[key]);say(FACTS[key])},delay);return true}return false}
+function factTxt(key){return (SP[OW.sp].facts||{})[key]||FACTS[key]}
+function fact(key,delay=0){const id=OW.sp+key;if(!OW.seen[id]||Math.random()<.35){OW.seen[id]=1;const t=factTxt(key);if(!t)return false;setTimeout(()=>{caption(t);say(t)},delay);return true}return false}
 function measure(){const r=$('orca').getBoundingClientRect();OW.W=r.width;OW.H=r.height;OW.surf=OW.H*.30;
  OW.base=clamp(Math.min(OW.W*.32,OW.H*.24),100,220);OW.ents.forEach(sizeEnt)}
-function sizeEnt(e){e.w=OW.base*e.s;e.h=e.w*140/220;e.el.style.width=e.w+'px';e.el.style.height=e.h+'px'}
+function sizeEnt(e){e.w=OW.base*e.s;e.h=e.w*SP[OW.sp].asp;e.el.style.width=e.w+'px';e.el.style.height=e.h+'px'}
 const yMin=e=>OW.surf+e.h*.5, yMax=e=>OW.H-BAR-e.h*.25;
-function mkEnt(kind,s){const el=document.createElement('div');el.className='orca-ent';el.innerHTML=ART.orca();$('oLayer').appendChild(el);
+function mkEnt(kind,s){const el=document.createElement('div');el.className='orca-ent';el.innerHTML=SP[OW.sp].art();$('oLayer').appendChild(el);
  const e={el,kind,s,x:0,y:0,vx:0,vy:0,a:0,dir:1,act:null,ph:Math.random()*6};sizeEnt(e);return e}
 function mkFish(){const el=document.createElement('div');el.className='fishy';el.innerHTML=ART.fish(rnd(['#ffcf3f','#ff8a3d','#c3e4ff','#ff9fb8','#b6f07a']),'#fff3c4');
  $('oLayer').appendChild(el);const f={el,alive:true};spawnFish(f,true);return f}
 function spawnFish(f,anywhere){const W=OW.W;f.x=anywhere?40+Math.random()*(W-80):(Math.random()<.5?-30:W+30);f.dir=f.x<W/2?1:-1;
  f.vx=f.dir*(30+Math.random()*40);f.baseY=OW.surf+50+Math.random()*Math.max(40,OW.H-BAR-OW.surf-110);f.ph=Math.random()*6;f.alive=true;f.el.hidden=false;f.el.classList.remove('ping');f.y=f.baseY;f.vy=0;f.cruise=Math.abs(f.vx)}
-function orcaInit(){OW.run=true;collect('orca');if(!OW.started){OW.started=true;$('oLayer').innerHTML='';measure();
-  const mom=mkEnt('mom',1.15),calf=mkEnt('calf',.62),P=mkEnt('player',1);OW.ents=[mom,calf,P];OW.P=P;
-  P.x=OW.W*.55;P.y=OW.surf+(OW.H-BAR-OW.surf)*.45;mom.x=P.x-P.w;mom.y=P.y-20;calf.x=P.x-P.w*1.6;calf.y=P.y+30;OW.tx=P.x;OW.ty=P.y;
-  OW.fish=[0,1,2,3,4,5].map(mkFish);drawCount();
-  setTimeout(()=>{caption(FACTS.intro+' Tap the water to swim.');say(FACTS.intro)},500);OW.seen.intro=1}
+function orcaInit(){OW.run=true;collect(OW.sp==='shark'?'gwhite':OW.sp);if(!OW.started){OW.started=true;$('oLayer').innerHTML='';measure();
+  buildPod(OW.W*.55,OW.surf+(OW.H-BAR-OW.surf)*.45);
+  OW.fish=[0,1,2,3,4,5].map(mkFish);drawCount();drawPick();
+  setTimeout(()=>{const t=factTxt('intro');caption(t+' Tap the water to swim.');say(t)},500);OW.seen[OW.sp+'intro']=1}
  else measure();
  OW.last=performance.now();requestAnimationFrame(oLoop)}
 addEventListener('resize',()=>{if(OW.started)measure()});
+function buildPod(x,y){(OW.ents||[]).forEach(e=>e.el.remove());const c=SP[OW.sp];
+ const P=mkEnt('player',c.s[0]);OW.ents=[];
+ if(c.pod){const mom=mkEnt('mom',c.s[1]),calf=mkEnt('calf',c.s[2]);mom.x=x-P.w;mom.y=y-20;calf.x=x-P.w*1.6;calf.y=y+30;OW.ents.push(mom,calf)}
+ OW.ents.push(P);OW.P=P;P.x=x;P.y=y;OW.tx=x;OW.ty=y;OW.chase=null;OW.ents.forEach(e=>{e.el.style.transform=`translate(${e.x-e.w/2}px,${e.y-e.h/2}px)`});
+ document.querySelectorAll('#orca [data-act]').forEach(b=>b.hidden=!c.acts.includes(b.dataset.act));$('sharkBtn').hidden=!c.enemy;
+ if(!c.enemy&&OW.shark){const sh=OW.shark;sh.el.remove();sh.st.remove();sh.hpEl.remove();sh.alive=false;OW.shark=null;OW.sharkWait=30}}
+function drawPick(){document.querySelectorAll('#oPick .pk').forEach(b=>{if(!b.firstChild)b.innerHTML=SP[b.dataset.sp].art();b.classList.toggle('on',b.dataset.sp===OW.sp)})}
+function setSpecies(sp){if(sp===OW.sp||!SP[sp]||(OW.P&&OW.P.act))return;OW.sp=sp;STORE.set('oSp',sp);const P=OW.P;
+ const x=P?P.x:OW.W*.55,y=P?clamp(P.y,OW.surf+40,OW.H-BAR-40):OW.surf+(OW.H-BAR-OW.surf)*.45;
+ measure();buildPod(x,y);measure();drawPick();OW.P.sq=1;mbubs(x,y,16,90);sparks(x,y,8,90);sfx.pop();collect(sp==='shark'?'gwhite':sp);
+ const t=factTxt('intro');caption(SP[sp].hello+' '+t);say(SP[sp].hello+' '+t);OW.seen[sp+'intro']=1}
+document.querySelectorAll('#oPick .pk').forEach(b=>b.addEventListener('pointerdown',ev=>{ev.stopPropagation();audio();setSpecies(b.dataset.sp)}));
 function drawCount(){$('oCount').innerHTML=[0,1,2,3,4].map(i=>`<div class="${i<OW.count?'on':''}">${ART.fish('#ffcf3f','#ff8a3d')}</div>`).join('')}
 // local point (right-facing art, relative to centre, in px) -> screen
 function pt(e,lx,ly){const X=lx*e.dir,Y=ly,t=e.a*e.dir*Math.PI/180;return [e.x+X*Math.cos(t)-Y*Math.sin(t),e.y+X*Math.sin(t)+Y*Math.cos(t)]}
@@ -1457,21 +1514,31 @@ function makeAct(name,e){const x0=e.x,y0=e.y,a0=e.a,W=OW.W,H=OW.H,S=()=>OW.surf;
   else if(p<.85){a=6;fire('t2',()=>{const [tx]=pt(e,-e.w*.46,0);splash(tx,1.1);sfx.splash();slapHit(e,tx)})}
   else{a=lerp(6,0,(p-.85)/.15);e.y=lerp(S()+e.h*.3,S()+e.h*.7,ease((p-.85)/.15))}
   if(p>=.25)e.y=p<.85?S()+e.h*.3:e.y;return{a}}}}
+ if(name==='bite'){let d=e.dir;const reach=Math.min(W*.28,e.w*1.3);if(x0+d*reach>W-e.w*.4||x0+d*reach<e.w*.4)d=-d;e.dir=d;
+  return{dur:.9,fn:p=>{let a=0;if(p<.25){e.x=x0-d*e.w*.08*ease(p/.25);a=-6}
+   else if(p<.7){const q=ease((p-.25)/.45);e.x=x0-d*e.w*.08+d*(reach+e.w*.08)*q;a=4;fire('w',()=>sfx.whoosh())}
+   else{fire('c',()=>{const [mx,my]=pt(e,e.w*.42,e.h*.05);pow('CHOMP!',mx,my-40);sfx.chomp();e.sq=1;mbubs(mx,my,8)});a=0}
+   e.y=clamp(y0,yMin(e),yMax(e));return{a}}}}
+ if(name==='smell')return{dur:1.6,fn:p=>{const [hx,hy]=pt(e,e.w*.46,0);
+  fire('r',()=>{[0,300,600].forEach(t=>setTimeout(()=>{const r=document.createElement('div');r.className='sniff';r.style.left=hx+'px';r.style.top=hy+'px';$('oLayer').appendChild(r);setTimeout(()=>r.remove(),1050)},t));
+   noise(.12,.3,'bandpass',2200);setTimeout(()=>noise(.12,.3,'bandpass',2600),220)});
+  if(p>.85)fire('f',()=>{let best=null,bd=1e9;OW.fish.forEach(f=>{if(!f.alive)return;const d=Math.hypot(f.x-e.x,f.y-e.y);if(d<bd){bd=d;best=f}});
+   if(best){best.el.classList.add('ping');OW.chase=best}});return{a:e.a}}};
  if(name==='sonar')return{dur:1.5,fn:p=>{const [hx,hy]=pt(e,e.w*.44,e.h*.05);
   fire('r',()=>{ring(hx,hy,0);ring(hx,hy,350);ring(hx,hy,700);sfx.click();setTimeout(sfx.click,500)});
   if(p>.9)fire('f',()=>{if(OW.shark&&OW.shark.state==='hunt'){OW.chase=OW.shark;return}let best=null,bd=1e9;OW.fish.forEach(f=>{if(!f.alive)return;const d=Math.hypot(f.x-e.x,f.y-e.y);if(d<bd){bd=d;best=f}});
    if(best){best.el.classList.add('ping');OW.chase=best}});return{a:e.a}}};
 }
 function doAct(name){const P=OW.P;if(P.act)return;P.act=makeAct(name,P);P.act.t=0;say(SHOUT[name]);
- if(name!=='sonar')OW.ents.filter(f=>f!==P).forEach((f,i)=>setTimeout(()=>{if(OW.run&&!f.act){f.act=makeAct(name,f);f.act.t=0}},380*(i+1)));
- setTimeout(()=>fact(name),name==='sonar'?1700:2300)}
+ if(!['sonar','bite','smell'].includes(name))OW.ents.filter(f=>f!==P).forEach((f,i)=>setTimeout(()=>{if(OW.run&&!f.act){f.act=makeAct(name,f);f.act.t=0}},380*(i+1)));
+ setTimeout(()=>fact(name),['sonar','smell','bite'].includes(name)?1700:2300)}
 document.querySelectorAll('[data-act]').forEach(b=>b.addEventListener('pointerdown',ev=>{ev.stopPropagation();audio();doAct(b.dataset.act)}));
-function callPod(){sfx.whistle(1);setTimeout(()=>sfx.whistle(.8),500);setTimeout(()=>sfx.whistle(1.35),950);
+function callPod(){const m=SP[OW.sp].whistle||1;if(OW.sp==='shark'){mbubs(OW.P.x,OW.P.y,10);sfx.bubble()}else{sfx.whistle(m);setTimeout(()=>sfx.whistle(.8*m),500);setTimeout(()=>sfx.whistle(1.35*m),950)}
  OW.ents.forEach(e=>{if(!e.act){e.act={dur:.8,t:0,fn:p=>({a:Math.sin(p*Math.PI*3)*14})}}});fact('call',1500)}
 function setTarget(cx,cy){const r=$('orca').getBoundingClientRect(),x=cx-r.left,y=cy-r.top,P=OW.P;
  OW.chase=null;OW.fish.forEach(f=>f.el.classList.remove('ping'));
  OW.tx=clamp(x,P.w*.45,OW.W-P.w*.45);OW.ty=clamp(y,yMin(P),yMax(P));return[x,y]}
-$('orca').addEventListener('pointerdown',ev=>{if(ev.target.closest('.act,.homebtn'))return;audio();const P=OW.P;if(!P)return;
+$('orca').addEventListener('pointerdown',ev=>{if(ev.target.closest('.act,.homebtn,.pk'))return;audio();const P=OW.P;if(!P)return;
  const r=$('orca').getBoundingClientRect(),x=ev.clientX-r.left,y=ev.clientY-r.top;
  if(Math.hypot(x-P.x,y-P.y)<P.w*.42&&!P.act){callPod();return}
  if(y<OW.surf){setTarget(ev.clientX,ev.clientY);doAct('jump');return}
@@ -1489,7 +1556,7 @@ function mbubs(x,y,n,r=70){for(let i=0;i<n;i++){const el=fxAt('mbub',x,y,1100),s
 function shake(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){}restart($('oLayer'),'shake')}
 function eatFish(f){const ex=f.x,ey=f.y;adj('fish',OW.time-(OW.lastCatch||0)<6?.05:.02);OW.lastCatch=OW.time;pow(rnd(['CHOMP!','GULP!','YUM!','MUNCH!']),ex,ey-40);mbubs(ex,ey,12);sparks(ex,ey,6,70);OW.P.sq=1;
  setTimeout(()=>{const last=$('oCount').children[OW.count-1];if(last)last.classList.add('bump')},0);f.alive=false;f.el.hidden=true;if(OW.chase===f)OW.chase=null;sfx.chomp();OW.count++;drawCount();
- if(OW.count>=5){setTimeout(()=>{sfx.tada();pow('FULL!',OW.W/2,OW.H*.42,'big');sparks(OW.W/2,OW.H*.42,14,160);caption('Hooray! The whole pod is full!');say('Hooray! The whole pod is full!');
+ if(OW.count>=5){setTimeout(()=>{sfx.tada();pow('FULL!',OW.W/2,OW.H*.42,'big');sparks(OW.W/2,OW.H*.42,14,160);caption(SP[OW.sp].full);say(SP[OW.sp].full);
    OW.ents.forEach((e,i)=>setTimeout(()=>{if(!e.act){e.act=makeAct('jump',e);e.act.t=0}},i*400));
    setTimeout(()=>fact('pod'),2600);setTimeout(()=>{OW.count=0;drawCount()},2400)},300)}
  else if(OW.count===2&&!OW.seen.hunt)fact('hunt',300);else if(Math.random()<.5)say(rnd(['Yum!','Got it!','Chomp!']));
@@ -1503,7 +1570,7 @@ function oLoop(now){if(!OW.run)return;const dt=Math.min(.05,(now-OW.last)/1000);
   }else{let tx,ty;
    if(e===P){if(OW.chase&&OW.chase.alive){tx=OW.chase.x;ty=OW.chase.y}else{tx=OW.tx;ty=OW.ty}}
    else{const k=e.kind==='mom'?1:1.8;tx=P.x-P.dir*P.w*.8*k;ty=P.y+(e.kind==='mom'?-P.h*.4:P.h*.5)+Math.sin(OW.time*1.3+k)*10}
-   const maxS=W*(e===P?.55:.6),dx=tx-e.x,dy=ty-e.y,f=Math.min(1,dt*3);
+   const maxS=W*(e===P?.55*SP[OW.sp].speed:.6*SP[OW.sp].speed),dx=tx-e.x,dy=ty-e.y,f=Math.min(1,dt*3);
    e.vx+=(clamp(dx*2.2,-maxS,maxS)-e.vx)*f;e.vy+=(clamp(dy*2.2,-maxS,maxS)-e.vy)*f;
    e.x=clamp(e.x+e.vx*dt,e.w*.4,W-e.w*.4);
    const ny=e.y+e.vy*dt;e.y=ny<yMin(e)?lerp(e.y,yMin(e),Math.min(1,dt*4)):Math.min(ny,yMax(e));
@@ -1535,7 +1602,7 @@ function oLoop(now){if(!OW.run)return;const dt=Math.min(.05,(now-OW.last)/1000);
 /* ---- great white shark showdown ---- */
 OW.sharkWait=14;
 $('sharkBtn').addEventListener('pointerdown',ev=>{ev.stopPropagation();audio();if(!OW.shark)spawnShark();else say('Bump the shark!')});
-function spawnShark(){if(OW.shark||!OW.P)return;const el=document.createElement('div');el.className='gw';el.innerHTML=ART.gwhite();$('oLayer').appendChild(el);
+function spawnShark(){if(OW.shark||!OW.P||!SP[OW.sp].enemy)return;const el=document.createElement('div');el.className='gw';el.innerHTML=ART.gwhite();$('oLayer').appendChild(el);
  const st=document.createElement('div');st.className='stars';st.hidden=true;st.innerHTML=[0,1,2].map(i=>`<div style="position:absolute;left:${24+Math.cos(i*2.1)*24}px;top:${24+Math.sin(i*2.1)*24}px">${ART.star()}</div>`).join('');
  st.querySelectorAll('div').forEach(d=>d.firstChild.style.width='22px');$('oLayer').appendChild(st);
  const w=OW.base*1.1,fromRight=OW.P.x<OW.W/2;
@@ -1543,7 +1610,7 @@ function spawnShark(){if(OW.shark||!OW.P)return;const el=document.createElement(
   hp:3,state:'enter',t:0,cool:0,alive:true,wx:0,wy:0,atk:4};
  el.style.width=w+'px';el.style.height=sh.h+'px';OW.shark=sh;
  sh.hpEl=document.createElement('div');sh.hpEl.className='shp';$('oLayer').appendChild(sh.hpEl);drawShp();
- sfx.tense();caption(FACTS.shark);setTimeout(()=>say(FACTS.shark),300)}
+ sfx.tense();caption(factTxt('shark'));setTimeout(()=>say(factTxt('shark')),300)}
 function drawShp(){const sh=OW.shark;if(!sh)return;sh.hpEl.innerHTML=[0,1,2].map(i=>ART.heart(i<sh.hp)).join('');restart(sh.hpEl,'bump')}
 function hitShark(by,big){const sh=OW.shark;if(!sh||sh.cool>0||!['hunt','enter','windup'].includes(sh.state))return;
  sh.hp--;drawShp();adj('shark',.04);sh.atk=2+3*(1-sk('shark'))+Math.random()*2;sh.cool=1.1;sh.state='dizzy';sh.t=0;const k=Math.sign(sh.x-by.x)||1;sh.vx=k*OW.W*.7;sh.vy=-60;sh.dir=-k;
@@ -1568,7 +1635,7 @@ function stealFish(sh){const par=$('orca'),a=par.getBoundingClientRect(),slot=$(
  el.animate([{transform:`translate(${x0}px,${y0}px) scale(1.2)`},{transform:`translate(${(x0+x1)/2}px,${Math.min(y0,y1)-40}px) rotate(200deg)`},{transform:`translate(${x1}px,${y1}px) scale(.3) rotate(400deg)`}],{duration:700,easing:'ease-in'});
  setTimeout(()=>{el.remove();tone(160,.2,'square',.12,80)},700)}
 function slapHit(e,tx){const sh=OW.shark;if(sh&&Math.abs(sh.x-tx)<sh.w*.8&&sh.y<OW.surf+sh.h*2.2)hitShark(e,true)}
-function updShark(dt){const sh=OW.shark,W=OW.W;
+function updShark(dt){const sh=OW.shark,W=OW.W;if(!SP[OW.sp].enemy)return;
  if(!sh){if(!OW.P.act){OW.sharkWait-=dt;if(OW.sharkWait<=0){OW.sharkWait=28;spawnShark()}}return}
  sh.t+=dt;sh.cool-=dt;const yMinS=OW.surf+sh.h*.55,yMaxS=OW.H-BAR-sh.h*.3;let spin=0;
  const steer=(tx,ty,spd,f)=>{sh.vx+=(clamp((tx-sh.x)*2,-spd,spd)-sh.vx)*Math.min(1,dt*f);sh.vy+=(clamp((ty-sh.y)*2,-spd,spd)-sh.vy)*Math.min(1,dt*f)};
@@ -1597,13 +1664,13 @@ function updShark(dt){const sh=OW.shark,W=OW.W;
  else if(sh.state==='flip'){sh.vx*=Math.pow(.1,dt);sh.vy+=(OW.surf+(OW.H-BAR-OW.surf)*.35-sh.y)*dt;sh.flip=Math.min(1,sh.flip+dt*1.6);
   if(sh.flip>.6&&!sh.powFlip){sh.powFlip=1;pow('FLIP!',sh.x,sh.y-sh.h,'big');sparks(sh.x,sh.y,12,140);shake()}
   if(sh.t>1&&(sh.zt=(sh.zt||0)-dt)<0){sh.zt=.6;pow('z',sh.x+sh.dir*sh.w*.25,sh.y-sh.h*.2,'zz')}
-  if(sh.t>.5&&!sh.saidFlip){sh.saidFlip=1;caption(FACTS.flip);say('Flip! '+FACTS.flip)}
+  if(sh.t>.5&&!sh.saidFlip){sh.saidFlip=1;caption(factTxt('flip'));say('Flip! '+factTxt('flip'))}
   if(sh.t>4.2){sh.state='leave';sh.t=0;sh.dir=sh.x<W/2?-1:1}}
  else if(sh.state==='leave'){sh.flip=Math.max(0,sh.flip-dt*2);sh.vx=lerp(sh.vx,sh.dir*W*.9,Math.min(1,dt*2));sh.vy*=.95;
   if(sh.x<-sh.w||sh.x>W+sh.w){sh.el.remove();sh.st.remove();sh.hpEl.remove();sh.alive=false;OW.shark=null;OW.sharkWait=30;adj('shark',.1);collect('gwhite');
-   sfx.tada();pow('ORCAS WIN!',OW.W/2,OW.H*.45,'big');sparks(OW.W/2,OW.H*.45,16,180);mbubs(OW.W/2,OW.H*.55,20,140);caption('Hooray! The orcas won!');say('Hooray! The orcas won!');
+   sfx.tada();pow(OW.sp==='dolphin'?'DOLPHINS WIN!':'ORCAS WIN!',OW.W/2,OW.H*.45,'big');sparks(OW.W/2,OW.H*.45,16,180);mbubs(OW.W/2,OW.H*.55,20,140);caption(OW.sp==='dolphin'?'Hooray! The dolphins won!':'Hooray! The orcas won!');say(OW.sp==='dolphin'?'Hooray! The dolphins won!':'Hooray! The orcas won!');
    OW.ents.forEach((e,i)=>setTimeout(()=>{if(!e.act){e.act=makeAct('jump',e);e.act.t=0}},i*400));
-   setTimeout(()=>{caption(FACTS.win);say(FACTS.win)},2600);return}}
+   setTimeout(()=>{caption(factTxt('win'));say(factTxt('win'))},2600);return}}
  sh.x+=sh.vx*dt;sh.y+=sh.vy*dt;
  if(sh.state!=='leave'&&sh.state!=='enter')sh.x=clamp(sh.x,sh.w*.3,W-sh.w*.3);
  sh.y=clamp(sh.y,yMinS,yMaxS);
@@ -1630,7 +1697,7 @@ applySet();
 
 /* ============ STICKER ALBUM ============ */
 const COLLECT=[
- ['sea','orca','Killer whales live in families called pods.'],['sea','gwhite','Great white sharks have lots and lots of teeth.'],
+ ['sea','orca','Killer whales live in families called pods.'],['sea','dolphin','Every dolphin has its own whistle, like a name!'],['sea','gwhite','Great white sharks have lots and lots of teeth.'],
  ['sea','hammer','Hammerhead sharks have eyes on the ends of their wide heads.'],['sea','ray','Stingrays glide through the water like birds.'],
  ['sea','octopus','An octopus has eight arms.'],['sea','crab','Crabs walk sideways!'],['sea','starfish','A starfish has five arms.'],['sea','fish','Fish breathe under water with gills.'],
  ['land','trex',DINO_INFO.trex],['land','longneck',DINO_INFO.longneck],['land','trike',DINO_INFO.trike],['land','stego',DINO_INFO.stego],
